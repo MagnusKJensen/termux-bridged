@@ -24,6 +24,18 @@ public class OffloaderActivity extends Activity {
             throw new RuntimeException("Call to bindService() failed for termux service");
         }
 
-        termuxBridge.enqueueCommand("pwd", (output) -> System.out.println("PWD Yielded: " + output));
+
+        //termuxBridge.enqueueCommand("dpkg --configure -a", (output) -> System.out.println("Storage setup yielded: " + output + "\n"));
+        termuxBridge.enqueueCommand("apt update", (output) -> System.out.println("Storage setup yielded: " + output + "\n"));
+        termuxBridge.enqueueCommand("apt upgrade", (output) -> System.out.println("Storage setup yielded: " + output + "\n"));
+
+        termuxBridge.enqueueCommand("termux-setup-storage", (output) -> System.out.println("Storage setup yielded: " + output + "\n"));
+
+        termuxBridge.enqueueCommand("pwd", (output) -> System.out.println("PWD yielded: " + output + "\n"));
+        termuxBridge.enqueueCommand("cd storage/downloads/", (output) -> System.out.println("cd yielded: " + output + "\n"));
+        termuxBridge.enqueueCommand("pwd", (output) -> System.out.println("PWD yielded: " + output + "\n"));
+        termuxBridge.enqueueCommand("ls -a", (output) -> System.out.println("ls -a yielded: " + output + "\n"));
     }
+
+
 }

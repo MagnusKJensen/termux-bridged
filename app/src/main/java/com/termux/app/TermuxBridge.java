@@ -67,8 +67,9 @@ public class TermuxBridge implements ServiceConnection {
     private synchronized void parseOutput(String terminalOutput){
         String[] lines = terminalOutput.split("\n");
         String lastLine = lines[lines.length - 1].trim();
-
-        if (lastLine.startsWith("$")) {
+        if (lastLine.equals("Do you want to continue? [Y/n]")) {
+            executeCommand("Y");
+        } else if (lastLine.equals("$")) {
             // The terminal has finished processing the previous command
             if (currentCommand != null){
                 currentCommand.onExecuted.accept(extractLatestOutput(terminalOutput));
