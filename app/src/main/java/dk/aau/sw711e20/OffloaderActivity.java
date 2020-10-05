@@ -23,5 +23,7 @@ public class OffloaderActivity extends Activity {
         if (!bindService(termuxServiceIntent, termuxBridge, 0)) {
             throw new RuntimeException("Call to bindService() failed for termux service");
         }
+
+        termuxBridge.enqueueCommand("pwd", (output) -> System.out.println("PWD Yielded: " + output));
     }
 }
