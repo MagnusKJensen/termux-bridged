@@ -37,7 +37,7 @@
         <meta-data android:name="android.max_aspect" android:value="10.0" />
 
         <activity
-            android:name="dk.aau.sw711e20.OffloaderActivity"
+            android:name="dk.aau.sw711e20.frontend.LoginActivity"
 	    android:label="@string/application_name"
 	    android:configChanges="orientation|screenSize|smallestScreenSize|density|screenLayout|uiMode|keyboard|keyboardHidden|navigation"
             android:launchMode="singleTask"
@@ -58,7 +58,7 @@
             android:name="com.termux.app.TermuxHelpActivity"
             android:exported="false"
             android:theme="@android:style/Theme.Material.Light.DarkActionBar"
-            android:parentActivityName="dk.aau.sw711e20.OffloaderActivity"
+            android:parentActivityName="dk.aau.sw711e20.frontend.LoginActivity"
             android:resizeableActivity="true"
             android:label="@string/application_name" />
 
@@ -96,7 +96,7 @@
 
         <activity-alias
             android:name=".HomeActivity"
-            android:targetActivity="dk.aau.sw711e20.OffloaderActivity">
+            android:targetActivity="dk.aau.sw711e20.frontend.LoginActivity">
 
             <!-- Launch activity automatically on boot on Android Things devices -->
             <intent-filter>
