@@ -53,4 +53,5 @@
     <string name="press_here">press here</string>
     <string name="click_here">click here?</string>
     <string name="button">Button</string>
+    <string name="login">login</string>
 </resources>

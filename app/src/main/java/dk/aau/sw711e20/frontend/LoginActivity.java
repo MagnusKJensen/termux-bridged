@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -19,36 +20,31 @@ public class LoginActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_screen);
-        Toast.makeText(getApplicationContext(), "you did it yay", Toast.LENGTH_SHORT).show();
-
-        closeKeyboard();
 
     }
 
-    public void clickButton () {
-        Toast.makeText(getApplicationContext(), "you did it yay", Toast.LENGTH_SHORT).show();
+    public void clickButton (View view) {
+
+        if (isUserCorrect()) {
+            Toast.makeText(getApplicationContext(), "Logged in!!", Toast.LENGTH_SHORT).show();
+            goToJobActivity(view);
+        } else
+            Toast.makeText(getApplicationContext(), "not logged in :((", Toast.LENGTH_SHORT).show();
     }
 
-    private void closeKeyboard() {
-        // this will give us the view
-        // which is currently focus
-        // in this layout
-        View view = this.getCurrentFocus();
+    public boolean isUserCorrect () {
+        EditText x = findViewById(R.id.editTextTextEmailAddress);
+        String username = x.getText().toString();
 
-        // if nothing is currently
-        // focus then this will protect
-        // the app from crash
-        if (view != null) {
+        EditText y = findViewById(R.id.editTextTextPassword);
+        String password = y.getText().toString();
 
-            // now assign the system
-            // service to InputMethodManager
-            InputMethodManager manager
-                = (InputMethodManager)
-                getSystemService(
-                    Context.INPUT_METHOD_SERVICE);
-            manager
-                .hideSoftInputFromWindow(
-                    view.getWindowToken(), 0);
-        }
+        //TODO: connect user verification to GitHub?
+        return username.equals("admin") && password.equals("admin");
     }
+
+    public void goToJobActivity(View view) {
+        Intent intent = new Intent(this, JobActivity.class);
+        startActivity(intent);
     }
+}

@@ -63,6 +63,11 @@
             android:label="@string/application_name" />
 
         <activity
+            android:name="dk.aau.sw711e20.frontend.JobActivity"
+            android:parentActivityName="dk.aau.sw711e20.frontend.LoginActivity" />
+
+
+        <activity
             android:name="com.termux.filepicker.TermuxFileReceiverActivity"
             android:label="@string/application_name"
             android:taskAffinity="com.termux.filereceiver"
