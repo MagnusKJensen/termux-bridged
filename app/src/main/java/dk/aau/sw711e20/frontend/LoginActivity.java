@@ -1,19 +1,13 @@
 package dk.aau.sw711e20.frontend;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
-
 import com.termux.R;
-import com.termux.app.TermuxBridge;
-import com.termux.app.TermuxService;
 
 public class LoginActivity extends Activity {
 

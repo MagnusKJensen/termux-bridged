@@ -5,8 +5,10 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.termux.R;
 
@@ -21,7 +23,7 @@ public class JobActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.job_overview);
 
-        job_listview = (ListView)findViewById(R.id.job_list);
+        job_listview = findViewById(R.id.job_list);
 
         ArrayList<String> job_list = new ArrayList<>();
 
@@ -32,6 +34,14 @@ public class JobActivity extends Activity {
         ArrayAdapter ad = new ArrayAdapter(this, android.R.layout.simple_list_item_1, job_list);
 
         job_listview.setAdapter(ad);
+
+        job_listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                String selectedJob = (String) adapterView.getItemAtPosition(i);
+                Toast.makeText(getApplicationContext(), selectedJob, Toast.LENGTH_SHORT).show();
+            }
+        });
 
     }
 
