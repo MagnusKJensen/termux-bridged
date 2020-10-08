@@ -54,4 +54,9 @@
     <string name="click_here">click here?</string>
     <string name="button">Button</string>
     <string name="login">login</string>
+    <string name="settings">Settings</string>
+    <string name="use_while_on">Use while on</string>
+    <string name="on">On</string>
+    <string name="this_device_can_be_used_while">This device can be used while:</string>
+    <string name="to_power">To power</string>
 </resources>

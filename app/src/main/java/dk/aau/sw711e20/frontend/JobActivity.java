@@ -35,14 +35,20 @@ public class JobActivity extends Activity {
 
         job_listview.setAdapter(ad);
 
-        job_listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                String selectedJob = (String) adapterView.getItemAtPosition(i);
-                Toast.makeText(getApplicationContext(), selectedJob, Toast.LENGTH_SHORT).show();
-            }
+        job_listview.setOnItemClickListener((adapterView, view, i, l) -> {
+            String selectedJob = (String) adapterView.getItemAtPosition(i);
+            Toast.makeText(getApplicationContext(), selectedJob, Toast.LENGTH_SHORT).show();
         });
 
+    }
+
+    public void settings_press(View view) {
+        goToSettingsActivity(view);
+    }
+
+    public void goToSettingsActivity(View view) {
+        Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
     }
 
     public void logout_press(View view) {
