@@ -43,18 +43,13 @@
         android:onClick="logout_press"
         android:text="Logout" />
 
-    <Button
-        android:id="@+id/settings_button"
-        android:layout_width="132dp"
+    <ImageButton
+        android:id="@+id/imageButton"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginTop="32dp"
         android:layout_marginEnd="16dp"
-        android:adjustViewBounds="true"
-        android:maxWidth="80dp"
-        android:maxHeight="60dp"
-        android:scaleType="fitStart"
-        android:text="Settings"
-        tools:drawableLeft="@drawable/settings" />
+        android:layout_marginTop="32dp"
+        android:src="@drawable/settings" />
+
 </RelativeLayout>

@@ -46,10 +46,10 @@ public class JobActivity extends Activity {
     }
 
     public void logout_press(View view) {
-        goToJobActivity(view);
+        goToLoginActivity(view);
     }
 
-    public void goToJobActivity(View view) {
+    public void goToLoginActivity(View view) {
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
     }
