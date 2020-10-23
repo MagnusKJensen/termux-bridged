@@ -38,7 +38,7 @@
         android:layout_marginTop="32dp"
         android:drawableStart="@drawable/wifi"
         android:drawablePadding="16dp"
-        android:onClick="wifi_press"
+        android:onClick="setWifiButton"
         android:paddingStart="16dp"
         android:paddingTop="16dp"
         android:paddingEnd="16dp"
@@ -55,7 +55,7 @@
         android:layout_marginTop="24dp"
         android:drawableStart="@drawable/power"
         android:drawablePadding="16dp"
-        android:onClick="power_press"
+        android:onClick="setPowerButton"
         android:paddingStart="16dp"
         android:paddingTop="15dp"
         android:paddingEnd="16dp"
@@ -77,16 +77,17 @@
         app:layout_constraintTop_toBottomOf="@+id/settingsTitle" />
 
     <EditText
-        android:id="@+id/editTextTime"
+        android:id="@+id/fromTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:ems="10"
-        android:hint="23:00"
+        android:hint="@string/_23_00"
         android:inputType="time"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView2" />
+        app:layout_constraintTop_toBottomOf="@+id/textView2"
+        android:autofillHints="" />
 
     <TextView
         android:id="@+id/textView2"
@@ -94,23 +95,24 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginTop="32dp"
-        android:text="From:"
+        android:text="@string/from"
         android:textColor="#000000"
         android:textSize="18sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/powerButton" />
 
     <EditText
-        android:id="@+id/editTextTime2"
+        android:id="@+id/toTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:ems="10"
-        android:hint="07:00"
+        android:hint="@string/_07_00"
         android:inputType="time"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView3" />
+        app:layout_constraintTop_toBottomOf="@+id/textView3"
+        android:autofillHints="" />
 
     <TextView
         android:id="@+id/textView3"
@@ -118,21 +120,21 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginTop="16dp"
-        android:text="To:"
+        android:text="@string/to"
         android:textColor="#000000"
         android:textSize="18sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextTime" />
+        app:layout_constraintTop_toBottomOf="@+id/fromTime" />
 
     <Button
         android:id="@+id/button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="24dp"
-        android:layout_marginEnd="53dp"
-        android:text="Button"
-        android:onClick="prefbutton"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:onClick="setTimeframeButton"
+        android:text="@string/save_timeframe"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toTime" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
