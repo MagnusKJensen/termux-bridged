@@ -53,4 +53,16 @@
         android:onClick="settings_press"
         android:src="@drawable/settings" />
 
+    <Button
+        android:id="@+id/killbutton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="36dp"
+        android:layout_toStartOf="@+id/imageButton"
+        android:shadowColor="#CD5B5B"
+        android:text="kill job"
+        android:textColor="#BD1F1F" />
+
 </RelativeLayout>
