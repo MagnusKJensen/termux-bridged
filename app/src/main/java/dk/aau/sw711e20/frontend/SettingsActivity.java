@@ -7,8 +7,10 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
+import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
 import android.os.BatteryManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.View;
@@ -16,6 +18,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+
+import androidx.annotation.IntRange;
 
 import com.termux.R;
 
@@ -80,11 +84,9 @@ public class SettingsActivity extends Activity {
         return status == BatteryManager.BATTERY_STATUS_CHARGING || status == BatteryManager.BATTERY_STATUS_FULL;
     }
 
-    // TODO: also calls LTE as connected. which it should not do.
     public boolean isConnectedToWifi() {
-        ConnectivityManager connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetwork = connManager.getActiveNetworkInfo();
-        return activeNetwork != null && activeNetwork.isConnected();
+        int type = getConnectionType(getApplicationContext());
+        return type == 2;
     }
 
     public static void setDefaults(String key, String value, Context context) {
@@ -99,6 +101,7 @@ public class SettingsActivity extends Activity {
         return preferences.getString(key, null);
     }
 
+    // TODO: this function also checks if unit is usable. But this check should be moved to a listener in Termux.
     public void setTimeframeButton(View view) {
         try {
             @SuppressLint("SimpleDateFormat") SimpleDateFormat simpleDateFormat = new SimpleDateFormat("kk:mm");
@@ -151,4 +154,24 @@ public class SettingsActivity extends Activity {
             Toast.makeText(getApplicationContext(), "Time is not written correctly", Toast.LENGTH_SHORT).show();
         }
     }
+
+    @IntRange(from = 0, to = 3)
+    public static int getConnectionType(Context context) {
+        int result = 0; // Returns connection type. 0: none; 1: mobile data; 2: wifi
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (cm != null) {
+            NetworkCapabilities capabilities = cm.getNetworkCapabilities(cm.getActiveNetwork());
+            if (capabilities != null) {
+                if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
+                    result = 2;
+                } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
+                    result = 1;
+                } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_VPN)) {
+                    result = 3;
+                }
+            }
+        }
+        return result;
+    }
 }
+
