@@ -15,6 +15,11 @@ import java.util.function.Consumer;
 public class TermuxBridge implements ServiceConnection {
 
     private static final int TERMINAL_WIDTH = 100, TERMINAL_HEIGHT = 200;
+    private Consumer<String> onTextChanged;
+
+    public void setOnTextChanged(Consumer<String> onTextChanged) {
+        this.onTextChanged = onTextChanged;
+    }
 
     private static class CommandBundle {
         private String command;
@@ -67,8 +72,9 @@ public class TermuxBridge implements ServiceConnection {
     private synchronized void parseOutput(String terminalOutput){
         String[] lines = terminalOutput.split("\n");
         String lastLine = lines[lines.length - 1].trim();
-
-        if (lastLine.startsWith("$")) {
+        if (lastLine.equals("Do you want to continue? [Y/n]") || lastLine.equals("Do you want to continue ? (y/n)")) {
+            executeCommand("Y");
+        } else if (lastLine.equals("$")) {
             // The terminal has finished processing the previous command
             if (currentCommand != null){
                 currentCommand.onExecuted.accept(extractLatestOutput(terminalOutput));
@@ -109,6 +115,8 @@ public class TermuxBridge implements ServiceConnection {
                 String text = changedSession.getEmulator().
                     getSelectedText(0, 0, TERMINAL_WIDTH, TERMINAL_HEIGHT);
                 parseOutput(text);
+
+                if (onTextChanged != null) onTextChanged.accept(latestLines(text, 10));
             }
 
             @Override
@@ -126,6 +134,15 @@ public class TermuxBridge implements ServiceConnection {
             @Override
             public void onColorsChanged(TerminalSession session) { }
         };
+    }
+
+    private String latestLines(String fullText, int linesToInclude){
+        String[] lines = fullText.split("\n");
+        StringBuilder latestLines = new StringBuilder();
+        for (int i = Math.max(0, lines.length - 1 - linesToInclude); i < lines.length; i++) {
+            latestLines.append("\n").append(lines[i]);
+        }
+        return latestLines.toString();
     }
 
 }
