@@ -1,68 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#C1BEBE">
+    android:background="#FFFFFF">
 
     <TextView
         android:id="@+id/textView4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="40dp"
-        android:background="#C1BEBE"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="32dp"
+        android:background="#FFFFFF"
         android:text="Job overview"
         android:textColor="#000000"
-        android:textSize="24sp" />
-
-    <ListView
-        android:id="@+id/job_list"
-        android:layout_width="match_parent"
-        android:layout_height="628dp"
-        android:layout_below="@+id/textView4"
-        android:layout_alignParentBottom="true"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="0dp"
-        android:background="#FFFFFF"
-        android:backgroundTint="#FFFFFF">
-
-    </ListView>
+        android:textSize="24sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/logout_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="64dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="32dp"
         android:onClick="logout_press"
-        android:text="Logout" />
+        android:text="Logout"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <ImageButton
         android:id="@+id/imageButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="24dp"
         android:onClick="settings_press"
-        android:src="@drawable/settings" />
+        android:src="@drawable/settings"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/killbutton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="36dp"
-        android:layout_toStartOf="@+id/imageButton"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="32dp"
         android:shadowColor="#CD5B5B"
         android:text="kill job"
-        android:textColor="#BD1F1F" />
+        android:textColor="#BD1F1F"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
-</RelativeLayout>
+    <Button
+        android:id="@+id/httpget"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Request job"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/jobstatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:text="No job running"
+        android:textColor="#000000"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toTopOf="@+id/httpget"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

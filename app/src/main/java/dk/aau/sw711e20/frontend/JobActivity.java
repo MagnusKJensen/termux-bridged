@@ -18,7 +18,6 @@ import java.util.ArrayList;
 
 public class JobActivity extends Activity {
 
-    ListView job_listview;
     SharedPreferences.Editor editor;
 
     @SuppressLint("DefaultLocale")
@@ -31,23 +30,6 @@ public class JobActivity extends Activity {
         editor.commit();
 
         //Toast.makeText(getApplicationContext(), "now logged in", Toast.LENGTH_SHORT).show();
-
-        job_listview = findViewById(R.id.job_list);
-
-        ArrayList<String> job_list = new ArrayList<>();
-
-        for (int i=0; i < 100; i++) {
-            job_list.add(String.format("Job %2d", i));
-        }
-
-        ArrayAdapter ad = new ArrayAdapter(this, android.R.layout.simple_list_item_1, job_list);
-
-        job_listview.setAdapter(ad);
-
-        job_listview.setOnItemClickListener((adapterView, view, i, l) -> {
-            String selectedJob = (String) adapterView.getItemAtPosition(i);
-            Toast.makeText(getApplicationContext(), selectedJob, Toast.LENGTH_SHORT).show();
-        });
 
     }
 
