@@ -2,7 +2,9 @@ package dk.aau.sw711e20.frontend;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -11,8 +13,24 @@ import com.termux.R;
 
 public class LoginActivity extends Activity {
 
+    SharedPreferences.Editor editor;
+    SharedPreferences saved_values;
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        saved_values = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        editor = saved_values.edit();
+
+        String s = saved_values.getString("login", "null");
+        Toast.makeText(getApplicationContext(), s , Toast.LENGTH_SHORT).show();
+
+        if (s.equals("true")){
+            String username = saved_values.getString("username", "null");
+            Toast.makeText(getApplicationContext(), "Welcome " + username, Toast.LENGTH_SHORT).show();
+            goToJobActivity();
+        }
+
         setContentView(R.layout.login_screen);
 
     }
@@ -20,8 +38,9 @@ public class LoginActivity extends Activity {
     public void clickButton (View view) {
 
         if (isUserCorrect()) {
-            Toast.makeText(getApplicationContext(), "Logged in!!", Toast.LENGTH_SHORT).show();
-            goToJobActivity(view);
+            String username = saved_values.getString("username", "null");
+            Toast.makeText(getApplicationContext(), "Welcome " + username, Toast.LENGTH_SHORT).show();
+            goToJobActivity();
         } else
             Toast.makeText(getApplicationContext(), "not logged in :((", Toast.LENGTH_SHORT).show();
     }
@@ -30,14 +49,16 @@ public class LoginActivity extends Activity {
         EditText x = findViewById(R.id.editTextTextEmailAddress);
         String username = x.getText().toString();
 
-        EditText y = findViewById(R.id.editTextTextPassword);
-        String password = y.getText().toString();
+        if(!username.equals("")){
+            editor.putString("username", username);
+            editor.commit();
+            return true;
+        }
 
-        //TODO: connect user verification to GitHub?
-        return username.equals("admin") && password.equals("admin");
+        return false;
     }
 
-    public void goToJobActivity(View view) {
+    public void goToJobActivity() {
         Intent intent = new Intent(this, JobActivity.class);
         startActivity(intent);
     }

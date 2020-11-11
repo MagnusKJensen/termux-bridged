@@ -23,7 +23,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="240dp"
         android:ems="10"
-        android:hint="Enter email here"
+        android:hint="Enter username here"
         android:inputType="textEmailAddress"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
