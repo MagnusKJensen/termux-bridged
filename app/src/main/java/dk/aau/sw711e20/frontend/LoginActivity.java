@@ -23,7 +23,6 @@ public class LoginActivity extends Activity {
         editor = saved_values.edit();
 
         String s = saved_values.getString("login", "null");
-        Toast.makeText(getApplicationContext(), s , Toast.LENGTH_SHORT).show();
 
         if (s.equals("true")){
             String username = saved_values.getString("username", "null");
@@ -47,8 +46,9 @@ public class LoginActivity extends Activity {
 
     public boolean isUserCorrect () {
         EditText x = findViewById(R.id.editTextTextEmailAddress);
-        String username = x.getText().toString();
+        String username = x.getText().toString().replaceAll("\\s","");
 
+        //TODO: maybe set a limit in length?
         if(!username.equals("")){
             editor.putString("username", username);
             editor.commit();

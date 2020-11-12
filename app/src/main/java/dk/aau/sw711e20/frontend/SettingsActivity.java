@@ -8,9 +8,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkCapabilities;
-import android.net.NetworkInfo;
 import android.os.BatteryManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.View;
@@ -32,35 +30,26 @@ public class SettingsActivity extends Activity {
 
     Button wifiButton;
     Button powerButton;
-    SharedPreferences.Editor editor;
-    SharedPreferences saved_values;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings);
-        saved_values = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        editor = saved_values.edit();
-        editor.putString("wifi", "on");
-        editor.putString("power", "on");
-        editor.commit();
-
+        prefEditor().putString("wifi", "on").commit();
+        prefEditor().putString("power", "on").commit();
     }
 
     @SuppressLint("SetTextI18n")
     public void setWifiButton(View view) {
-        saved_values = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        editor = saved_values.edit();
-
         wifiButton = findViewById(R.id.wifiButton);
         if (wifiButton.getText().equals("On")) {
             wifiButton.setText("Off");
-            editor.putString("wifi", "off").commit();
+            prefEditor().putString("wifi", "off").commit();
         } else if (wifiButton.getText().equals("Off")) {
             wifiButton.setText("Always");
-            editor.putString("wifi", "always").commit();
+            prefEditor().putString("wifi", "always").commit();
         } else if (wifiButton.getText().equals("Always")) {
             wifiButton.setText("On");
-            editor.putString("wifi", "on").commit();
+            prefEditor().putString("wifi", "on").commit();
         } else {
             wifiButton.setText("you should not see this text");
         }
@@ -68,19 +57,16 @@ public class SettingsActivity extends Activity {
 
     @SuppressLint("SetTextI18n")
     public void setPowerButton(View view) {
-        saved_values = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        editor = saved_values.edit();
-
         powerButton = findViewById(R.id.powerButton);
         if (powerButton.getText().equals("To power")) {
             powerButton.setText("Off power");
-            editor.putString("power", "off").commit();
+            prefEditor().putString("power", "off").commit();
         } else if (powerButton.getText().equals("Off power")) {
             powerButton.setText("Always");
-            editor.putString("power", "always").commit();
+            prefEditor().putString("power", "always").commit();
         } else if (powerButton.getText().equals("Always")) {
             powerButton.setText("To power");
-            editor.putString("power", "on").commit();
+            prefEditor().putString("power", "on").commit();
         } else {
             powerButton.setText("you should not see this text");
         }
@@ -102,8 +88,6 @@ public class SettingsActivity extends Activity {
 
     // TODO: this function also checks if unit is usable. But this check should be moved to a listener in Termux.
     public void setTimeframeButton(View view) {
-        saved_values = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        editor = saved_values.edit();
 
         try {
             @SuppressLint("SimpleDateFormat") SimpleDateFormat simpleDateFormat = new SimpleDateFormat("kk:mm");
@@ -118,8 +102,8 @@ public class SettingsActivity extends Activity {
             // If one or both edit texts are empty then the timeframe is always.
             if (from.isEmpty() || to.isEmpty()) {
                 isTime = true;
-                editor.putString("fromTime", "always").commit();
-                editor.putString("toTime", "always").commit();
+                prefEditor().putString("fromTime", "always").commit();
+                prefEditor().putString("toTime", "always").commit();
             } else {
                 // Converting every time to same date, so that the check doesnt take date into consideration
 
@@ -127,8 +111,8 @@ public class SettingsActivity extends Activity {
                 Date toTime = simpleDateFormat.parse(to);
                 Date currentTime = simpleDateFormat.parse(ct);
 
-                editor.putString("fromTime", fromTime.toString()).commit();
-                editor.putString("toTime", toTime.toString()).commit();
+                prefEditor().putString("fromTime", fromTime.toString()).commit();
+                prefEditor().putString("toTime", toTime.toString()).commit();
 
                 // if timewindow is passing two dates, then only one needs to be correct
                 isTime = currentTime.after(fromTime) && currentTime.before(toTime);
@@ -137,8 +121,8 @@ public class SettingsActivity extends Activity {
                 }
             }
 
-            String power = saved_values.getString("power", "null");
-            String wifi = saved_values.getString("wifi", "null");
+            String power = saved_prefs().getString("power", "null");
+            String wifi = saved_prefs().getString("wifi", "null");
 
             boolean pow = isCharging() && (power.equals("on") || power.equals("always"));
             boolean notpow = !isCharging() && (power.equals("off") || power.equals("always"));
@@ -174,6 +158,17 @@ public class SettingsActivity extends Activity {
             }
         }
         return result;
+    }
+
+    public SharedPreferences.Editor prefEditor(){
+        SharedPreferences saved_values = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        SharedPreferences.Editor editor = saved_values.edit();
+        return editor;
+    }
+
+    public SharedPreferences saved_prefs(){
+        SharedPreferences saved_values = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        return saved_values;
     }
 }
 
