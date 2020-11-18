@@ -47,7 +47,7 @@ public class JobActivity extends Activity {
     }
 
     public void logout_press(View view) {
-        prefEditor().remove("login").commit();
+        prefEditor().clear().commit();
         goToLoginActivity(view);
     }
 

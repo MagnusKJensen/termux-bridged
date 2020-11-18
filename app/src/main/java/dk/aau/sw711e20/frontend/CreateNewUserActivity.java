@@ -11,41 +11,33 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+
 import com.termux.R;
 
-public class LoginActivity extends Activity {
+public class CreateNewUserActivity extends Activity {
 
     TextView textEdit;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        String s = saved_prefs().getString("login", "null");
-
-        if (s.equals("true")){
-            String username = saved_prefs().getString("username", "null");
-            Toast.makeText(getApplicationContext(), "Welcome " + username, Toast.LENGTH_SHORT).show();
-            goToJobActivity();
-        }
-
-        setContentView(R.layout.login_screen);
-
+        setContentView(R.layout.new_user);
     }
 
     @SuppressLint("SetTextI18n")
-    public void clickButton (View view) {
-
+    public void createPress (View view) {
         if (isUserCorrect()) {
             String username = saved_prefs().getString("username", "null");
             Toast.makeText(getApplicationContext(), "Welcome " + username, Toast.LENGTH_SHORT).show();
             goToJobActivity();
+
         } else
-            textEdit = (TextView) findViewById(R.id.userDoesntExist);
-            textEdit.setText("User doesn't exist");
+            textEdit = (TextView) findViewById(R.id.userAlreadyExists);
+            textEdit.setText("User already exists");
     }
 
     public boolean isUserCorrect () {
-        EditText x = findViewById(R.id.editTextTextEmailAddress);
+        EditText x = findViewById(R.id.createUsername);
         String username = x.getText().toString().replaceAll("\\s","");
 
         //TODO: maybe set a limit in length?
@@ -62,17 +54,8 @@ public class LoginActivity extends Activity {
 
     public void goToJobActivity() {
         Intent intent = new Intent(this, JobActivity.class);
+        //intent.addFlags(Intent.FLAG_ACTIVITY_);
         startActivity(intent);
-    }
-
-    public void goToNewUserActivity() {
-        Intent intent = new Intent(this, CreateNewUserActivity.class);
-        startActivity(intent);
-    }
-
-    public void pressCreateNewUser (View view) {
-        prefEditor().clear().commit();
-        goToNewUserActivity();
     }
 
     public SharedPreferences.Editor prefEditor(){
@@ -85,4 +68,5 @@ public class LoginActivity extends Activity {
         SharedPreferences saved_values = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         return saved_values;
     }
+
 }

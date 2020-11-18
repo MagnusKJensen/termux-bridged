@@ -66,12 +66,13 @@
             android:label="@string/application_name" />
 
         <activity
-            android:name="dk.aau.sw711e20.frontend.JobActivity"
-            android:parentActivityName="dk.aau.sw711e20.frontend.LoginActivity" />
+            android:name="dk.aau.sw711e20.frontend.JobActivity" />
 
         <activity
-            android:name="dk.aau.sw711e20.frontend.SettingsActivity"
-            android:parentActivityName="dk.aau.sw711e20.frontend.JobActivity" />
+            android:name="dk.aau.sw711e20.frontend.SettingsActivity" />
+
+        <activity
+            android:name="dk.aau.sw711e20.frontend.CreateNewUserActivity" />
 
 
         <activity

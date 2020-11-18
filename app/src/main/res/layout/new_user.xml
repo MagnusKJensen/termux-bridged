@@ -6,30 +6,19 @@
     android:layout_height="match_parent"
     android:background="#FFFFFF">
 
-    <TextView
-        android:id="@+id/userDoesntExist"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="95dp"
-        android:layout_marginBottom="8dp"
-        android:textColor="#FF1100"
-        android:textSize="18sp"
-        app:layout_constraintBottom_toTopOf="@+id/editTextTextEmailAddress"
-        app:layout_constraintStart_toStartOf="parent" />
-
     <Button
-        android:id="@+id/loginbutton"
+        android:id="@+id/createUser"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:onClick="clickButton"
-        android:text="@string/login"
+        android:onClick="createPress"
+        android:text="Create new user"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextTextEmailAddress" />
+        app:layout_constraintTop_toBottomOf="@+id/createUsername" />
 
     <EditText
-        android:id="@+id/editTextTextEmailAddress"
+        android:id="@+id/createUsername"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="250dp"
@@ -41,15 +30,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/button2"
+    <TextView
+        android:id="@+id/userAlreadyExists"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:onClick="pressCreateNewUser"
-        android:text="Create new user"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/loginbutton" />
-
+        android:layout_marginStart="95dp"
+        android:layout_marginBottom="8dp"
+        android:textColor="#FF1100"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toTopOf="@+id/createUsername"
+        app:layout_constraintStart_toStartOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
