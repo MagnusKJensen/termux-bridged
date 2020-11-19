@@ -14,8 +14,9 @@
         android:onClick="createPress"
         android:text="Create new user"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/createUsername" />
+        app:layout_constraintTop_toBottomOf="@+id/editTextCreatePassword" />
 
     <EditText
         android:id="@+id/createUsername"
@@ -30,13 +31,28 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <EditText
+        android:id="@+id/editTextCreatePassword"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:ems="10"
+        android:fontFamily="sans-serif"
+        android:hint="Enter password here"
+        android:inputType="textPassword"
+        app:layout_constraintBottom_toTopOf="@+id/loginbutton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/createUsername" />
+
     <TextView
         android:id="@+id/userAlreadyExists"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="95dp"
         android:layout_marginBottom="8dp"
-        android:textColor="#FF1100"
+        android:textColor="#F44336"
         android:textSize="18sp"
         app:layout_constraintBottom_toTopOf="@+id/createUsername"
         app:layout_constraintStart_toStartOf="parent" />

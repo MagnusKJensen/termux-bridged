@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.View;
@@ -18,34 +19,43 @@ import com.termux.R;
 public class CreateNewUserActivity extends Activity {
 
     TextView textEdit;
+    SharedPreferences.Editor editor;
+    SharedPreferences saved_values;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.new_user);
+        editor = (SharedPreferences.Editor) Preferences.prefEditor(getApplicationContext());
+        saved_values = (SharedPreferences) Preferences.saved_prefs(getApplicationContext());
     }
 
     @SuppressLint("SetTextI18n")
     public void createPress (View view) {
+        textEdit = (TextView) findViewById(R.id.userAlreadyExists);
         if (isUserCorrect()) {
-            String username = saved_prefs().getString("username", "null");
+            textEdit.setText("");
+            String username = saved_values.getString("username", "null");
             Toast.makeText(getApplicationContext(), "Welcome " + username, Toast.LENGTH_SHORT).show();
             goToJobActivity();
 
-        } else
-            textEdit = (TextView) findViewById(R.id.userAlreadyExists);
+        } else {
             textEdit.setText("User already exists");
+        }
     }
 
     public boolean isUserCorrect () {
         EditText x = findViewById(R.id.createUsername);
         String username = x.getText().toString().replaceAll("\\s","");
+        EditText y = findViewById(R.id.editTextCreatePassword);
+        String password = y.getText().toString();
 
         //TODO: maybe set a limit in length?
+        //TODO: euthentication check if username/user already exists
 
 
-        if(username.equals("Hannah")){
-            prefEditor().putString("username", username);
-            prefEditor().commit();
+        if(username.equals("Hannah") && password.equals("password")){
+            editor.putString("username", username).commit();
+            editor.putString("password", password).commit();
             return true;
         }
 
@@ -54,19 +64,7 @@ public class CreateNewUserActivity extends Activity {
 
     public void goToJobActivity() {
         Intent intent = new Intent(this, JobActivity.class);
-        //intent.addFlags(Intent.FLAG_ACTIVITY_);
         startActivity(intent);
-    }
-
-    public SharedPreferences.Editor prefEditor(){
-        SharedPreferences saved_values = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        SharedPreferences.Editor editor = saved_values.edit();
-        return editor;
-    }
-
-    public SharedPreferences saved_prefs(){
-        SharedPreferences saved_values = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        return saved_values;
     }
 
 }

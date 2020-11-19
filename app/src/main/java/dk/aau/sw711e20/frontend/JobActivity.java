@@ -28,12 +28,15 @@ import okhttp3.Response;
 public class JobActivity extends Activity {
 
     TextView jobStatus;
+    SharedPreferences.Editor editor;
+    SharedPreferences saved_values;
 
     @SuppressLint("DefaultLocale")
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.job_overview);
-        prefEditor().putString("login", "true").commit();
+        editor = (SharedPreferences.Editor) Preferences.prefEditor(getApplicationContext());
+        saved_values = (SharedPreferences) Preferences.saved_prefs(getApplicationContext());
 
     }
 
@@ -47,7 +50,8 @@ public class JobActivity extends Activity {
     }
 
     public void logout_press(View view) {
-        prefEditor().clear().commit();
+        editor.remove("login").commit();
+        editor.remove("username").commit();
         goToLoginActivity(view);
     }
 
@@ -94,12 +98,5 @@ public class JobActivity extends Activity {
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
     }
-
-    public SharedPreferences.Editor prefEditor(){
-        SharedPreferences saved_values = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        SharedPreferences.Editor editor = saved_values.edit();
-        return editor;
-    }
-
 
 }

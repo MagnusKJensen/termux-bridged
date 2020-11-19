@@ -30,12 +30,16 @@ public class SettingsActivity extends Activity {
 
     Button wifiButton;
     Button powerButton;
+    SharedPreferences.Editor editor;
+    SharedPreferences saved_values;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings);
-        prefEditor().putString("wifi", "on").commit();
-        prefEditor().putString("power", "on").commit();
+        editor = (SharedPreferences.Editor) Preferences.prefEditor(getApplicationContext());
+        saved_values = (SharedPreferences) Preferences.saved_prefs(getApplicationContext());
+        editor.putString("wifi", "on").commit();
+        editor.putString("power", "on").commit();
     }
 
     @SuppressLint("SetTextI18n")
@@ -43,13 +47,13 @@ public class SettingsActivity extends Activity {
         wifiButton = findViewById(R.id.wifiButton);
         if (wifiButton.getText().equals("On")) {
             wifiButton.setText("Off");
-            prefEditor().putString("wifi", "off").commit();
+            editor.putString("wifi", "off").commit();
         } else if (wifiButton.getText().equals("Off")) {
             wifiButton.setText("Always");
-            prefEditor().putString("wifi", "always").commit();
+            editor.putString("wifi", "always").commit();
         } else if (wifiButton.getText().equals("Always")) {
             wifiButton.setText("On");
-            prefEditor().putString("wifi", "on").commit();
+            editor.putString("wifi", "on").commit();
         } else {
             wifiButton.setText("you should not see this text");
         }
@@ -60,13 +64,13 @@ public class SettingsActivity extends Activity {
         powerButton = findViewById(R.id.powerButton);
         if (powerButton.getText().equals("To power")) {
             powerButton.setText("Off power");
-            prefEditor().putString("power", "off").commit();
+            editor.putString("power", "off").commit();
         } else if (powerButton.getText().equals("Off power")) {
             powerButton.setText("Always");
-            prefEditor().putString("power", "always").commit();
+            editor.putString("power", "always").commit();
         } else if (powerButton.getText().equals("Always")) {
             powerButton.setText("To power");
-            prefEditor().putString("power", "on").commit();
+            editor.putString("power", "on").commit();
         } else {
             powerButton.setText("you should not see this text");
         }
@@ -102,8 +106,8 @@ public class SettingsActivity extends Activity {
             // If one or both edit texts are empty then the timeframe is always.
             if (from.isEmpty() || to.isEmpty()) {
                 isTime = true;
-                prefEditor().putString("fromTime", "always").commit();
-                prefEditor().putString("toTime", "always").commit();
+                editor.putString("fromTime", "always").commit();
+                editor.putString("toTime", "always").commit();
             } else {
                 // Converting every time to same date, so that the check doesnt take date into consideration
 
@@ -111,8 +115,8 @@ public class SettingsActivity extends Activity {
                 Date toTime = simpleDateFormat.parse(to);
                 Date currentTime = simpleDateFormat.parse(ct);
 
-                prefEditor().putString("fromTime", fromTime.toString()).commit();
-                prefEditor().putString("toTime", toTime.toString()).commit();
+                editor.putString("fromTime", fromTime.toString()).commit();
+                editor.putString("toTime", toTime.toString()).commit();
 
                 // if timewindow is passing two dates, then only one needs to be correct
                 isTime = currentTime.after(fromTime) && currentTime.before(toTime);
@@ -121,8 +125,8 @@ public class SettingsActivity extends Activity {
                 }
             }
 
-            String power = saved_prefs().getString("power", "null");
-            String wifi = saved_prefs().getString("wifi", "null");
+            String power = saved_values.getString("power", "null");
+            String wifi = saved_values.getString("wifi", "null");
 
             boolean pow = isCharging() && (power.equals("on") || power.equals("always"));
             boolean notpow = !isCharging() && (power.equals("off") || power.equals("always"));
@@ -158,17 +162,6 @@ public class SettingsActivity extends Activity {
             }
         }
         return result;
-    }
-
-    public SharedPreferences.Editor prefEditor(){
-        SharedPreferences saved_values = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        SharedPreferences.Editor editor = saved_values.edit();
-        return editor;
-    }
-
-    public SharedPreferences saved_prefs(){
-        SharedPreferences saved_values = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        return saved_values;
     }
 }
 
