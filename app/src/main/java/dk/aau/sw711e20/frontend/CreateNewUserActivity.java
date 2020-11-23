@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -15,6 +16,9 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 
 import com.termux.R;
+
+import io.swagger.client.apis.UserApi;
+import io.swagger.client.models.UserCredentials;
 
 public class CreateNewUserActivity extends Activity {
 
@@ -30,40 +34,61 @@ public class CreateNewUserActivity extends Activity {
     }
 
     @SuppressLint("SetTextI18n")
-    public void createPress (View view) {
-        textEdit = (TextView) findViewById(R.id.userAlreadyExists);
-        if (isUserCorrect()) {
-            textEdit.setText("");
-            String username = saved_values.getString("username", "null");
-            Toast.makeText(getApplicationContext(), "Welcome " + username, Toast.LENGTH_SHORT).show();
-            goToJobActivity();
+    public void onCreateUserPressed(View view) {
+        UserCredentials enteredCredentials = getEnteredCredentials();
+        boolean inputCorrect = verifyInput(enteredCredentials);
 
-        } else {
-            textEdit.setText("User already exists");
-        }
-    }
-
-    public boolean isUserCorrect () {
-        EditText x = findViewById(R.id.createUsername);
-        String username = x.getText().toString().replaceAll("\\s","");
-        EditText y = findViewById(R.id.editTextCreatePassword);
-        String password = y.getText().toString();
-
-        //TODO: maybe set a limit in length?
-        //TODO: euthentication check if username/user already exists
-
-
-        if(username.equals("Hannah") && password.equals("password")){
-            editor.putString("username", username).commit();
-            editor.putString("password", password).commit();
-            return true;
+        if (!inputCorrect) {
+            markErroneousInput("Invalid input");
         }
 
-        return false;
+        Thread createUserRequestThread = new Thread(() -> {
+            try {
+                UserCredentials userCred = new UserApi("http://10.0.2.2:8080").createUser(enteredCredentials);
+                goToJobActivity(userCred);
+            } catch (Exception e) {
+                Log.i("user_creation", e.getMessage());
+                markErroneousInput("User with username " + enteredCredentials.getUsername() + " already exists");
+            }
+        });
+        createUserRequestThread.start();
     }
 
-    public void goToJobActivity() {
+    private void markErroneousInput(String errorMessage) {
+        runOnUiThread(() -> {
+                textEdit = (TextView) findViewById(R.id.userAlreadyExists);
+                textEdit.setText(errorMessage);
+
+                EditText usernameInputField = findViewById(R.id.createUsername);
+                EditText passwordInputField = findViewById(R.id.editTextCreatePassword);
+                // Todo: Hannah - make input text fields red if possible
+            }
+        );
+    }
+
+    private UserCredentials getEnteredCredentials() {
+        EditText usernameInputField = findViewById(R.id.createUsername);
+        String username = usernameInputField.getText().toString().replaceAll("\\s", "");
+        EditText passwordInputField = findViewById(R.id.editTextCreatePassword);
+        String password = passwordInputField.getText().toString();
+        return new UserCredentials(username, password);
+    }
+
+    private boolean verifyInput(UserCredentials enteredCredentials) {
+        // Password and username must have at least one character
+        if (enteredCredentials.getUsername().isEmpty()) return false;
+        if (enteredCredentials.getPassword().isEmpty()) return false;
+
+        // Accepted
+        return true;
+    }
+
+    public void goToJobActivity(UserCredentials userCredentials) {
         Intent intent = new Intent(this, JobActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putString("username", userCredentials.getUsername());
+        bundle.putString("password", userCredentials.getPassword());
+        intent.putExtras(bundle);
         startActivity(intent);
     }
 

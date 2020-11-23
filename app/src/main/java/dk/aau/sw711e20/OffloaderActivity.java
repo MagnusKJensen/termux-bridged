@@ -5,7 +5,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.view.inputmethod.InputMethodManager;
+
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -15,11 +15,6 @@ import androidx.core.app.ActivityCompat;
 import com.termux.R;
 import com.termux.app.TermuxBridge;
 import com.termux.app.TermuxService;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
 
 public class OffloaderActivity extends Activity {
 
@@ -71,9 +66,7 @@ public class OffloaderActivity extends Activity {
         TextView outputTextView = findViewById(R.id.output_text_view);
         termuxBridge.setOnTextChanged(outputTextView::setText);
         outputTextView.requestFocus();
-
-
-
+        
         for (String command : initializationCommands)
             termuxBridge.enqueueCommand(command, (s) -> {});
 
