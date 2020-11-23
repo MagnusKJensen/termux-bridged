@@ -45,6 +45,7 @@ public class CreateNewUserActivity extends Activity {
         Thread createUserRequestThread = new Thread(() -> {
             try {
                 UserCredentials userCred = new UserApi("http://10.0.2.2:8080").createUser(enteredCredentials);
+                Preferences.saveLoginCredentials(this, userCred);
                 goToJobActivity(userCred);
             } catch (Exception e) {
                 Log.i("user_creation", e.getMessage());

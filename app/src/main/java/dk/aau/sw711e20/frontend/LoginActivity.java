@@ -2,6 +2,7 @@ package dk.aau.sw711e20.frontend;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import android.widget.Toast;
 import com.termux.R;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import io.swagger.client.apis.UserApi;
 import io.swagger.client.models.DeviceId;
@@ -38,9 +40,8 @@ public class LoginActivity extends Activity {
             UserCredentials cred = savedCredentials.get();
             setUserNameText(cred.getUsername());
             setPasswordText(cred.getPassword());
-            attemptLogin(cred);
+            new Thread(() -> attemptLogin(cred)).start();
         }
-        //setContentView(R.layout.login_screen);
     }
 
     @SuppressLint("SetTextI18n")
@@ -58,10 +59,11 @@ public class LoginActivity extends Activity {
 
     private void attemptLogin(UserCredentials userCredentials) {
         try {
-            UserCredentials userCred = new UserApi("http://10.0.2.2:8080").login(userCredentials, new DeviceId(saved_values.getString("PREF_UNIQUE_ID", "null")));
+            Log.i("user_login", "Logging in : " + userCredentials.toString());
+            UserCredentials userCred = new UserApi("http://10.0.2.2:8080").login(userCredentials, new DeviceId(getUUID()));
             onLoginSuccess(userCred);
         } catch (Exception e) {
-            Log.i("user_.login", e.getMessage());
+            Log.i("user_login", e.toString());
             onLoginFailed(userCredentials);
         }
     }
@@ -72,6 +74,7 @@ public class LoginActivity extends Activity {
     }
 
     private void onLoginSuccess(UserCredentials userCredentials) {
+        Preferences.saveLoginCredentials(this, userCredentials);
         goToJobActivity(userCredentials);
     }
 
@@ -114,6 +117,24 @@ public class LoginActivity extends Activity {
     public void pressCreateNewUser(View view) {
         editor.clear().commit();
         goToNewUserActivity();
+    }
+
+    public String getUUID() {
+        String PREF_UNIQUE_ID = "PREF_UNIQUE_ID";
+        String uniqueID = saved_values.getString(PREF_UNIQUE_ID, "null");
+
+        if (uniqueID.equals("null")) {
+            SharedPreferences sharedPrefs = getApplicationContext().getSharedPreferences(
+                PREF_UNIQUE_ID, Context.MODE_PRIVATE);
+            uniqueID = sharedPrefs.getString(PREF_UNIQUE_ID, "null");
+            if (uniqueID.equals("null")) {
+                uniqueID = UUID.randomUUID().toString();
+                SharedPreferences.Editor editor = sharedPrefs.edit();
+                editor.putString(PREF_UNIQUE_ID, uniqueID);
+                editor.apply();
+            }
+        }
+        return uniqueID;
     }
 
     /*

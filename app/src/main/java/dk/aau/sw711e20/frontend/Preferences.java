@@ -10,6 +10,9 @@ import io.swagger.client.models.UserCredentials;
 
 public class Preferences {
 
+    private static final String USERNAME_TAG = "username";
+    private static final String PASSWORD_TAG = "password";
+
     public static SharedPreferences.Editor prefEditor(Context appCon){
         SharedPreferences saved_values = PreferenceManager.getDefaultSharedPreferences(appCon);
         SharedPreferences.Editor editor = saved_values.edit();
@@ -30,4 +33,13 @@ public class Preferences {
 
         return Optional.of(new UserCredentials(username, password));
     }
+
+    public static void saveLoginCredentials(Context appContext, UserCredentials userCredentials){
+        final String DEFAULT = "*default_value";
+        SharedPreferences.Editor editor = prefEditor(appContext);
+        editor.putString(USERNAME_TAG, userCredentials.getUsername());
+        editor.putString(PASSWORD_TAG, userCredentials.getPassword());
+        editor.apply();
+    }
+
 }
