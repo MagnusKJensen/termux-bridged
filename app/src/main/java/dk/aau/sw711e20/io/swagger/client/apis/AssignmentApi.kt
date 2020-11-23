@@ -11,6 +11,7 @@
  */
 package io.swagger.client.apis
 
+import io.swagger.client.models.Assignment
 import io.swagger.client.models.DeviceId
 import io.swagger.client.models.UserCredentials
 
@@ -23,21 +24,21 @@ class AssignmentApi(basePath: kotlin.String = "http://localhost:8080") : ApiClie
      * Returns a job for the device to process
      * @param userCredentials User authentication 
      * @param deviceId Identification for device 
-     * @return kotlin.Array<kotlin.Byte>
+     * @return Assignment
      */
     @Suppress("UNCHECKED_CAST")
-    fun getJobForDevice(userCredentials: UserCredentials, deviceId: DeviceId): kotlin.Array<kotlin.Byte> {
+    fun getJobForDevice(userCredentials: UserCredentials, deviceId: DeviceId): Assignment {
         
         val localVariableConfig = RequestConfig(
                 RequestMethod.GET,
                 "/assignments/{userCredentials}/{deviceId}".replace("{" + "userCredentials" + "}", "$userCredentials").replace("{" + "deviceId" + "}", "$deviceId")
         )
-        val response = request<kotlin.Array<kotlin.Byte>>(
+        val response = request<Assignment>(
                 localVariableConfig
         )
 
         return when (response.responseType) {
-            ResponseType.Success -> (response as Success<*>).data as kotlin.Array<kotlin.Byte>
+            ResponseType.Success -> (response as Success<*>).data as Assignment
             ResponseType.Informational -> TODO()
             ResponseType.Redirection -> TODO()
             ResponseType.ClientError -> throw ClientException((response as ClientError<*>).body as? String ?: "Client error")

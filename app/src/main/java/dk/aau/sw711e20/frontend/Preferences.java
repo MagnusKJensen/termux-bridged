@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import io.swagger.client.models.UserCredentials;
 
@@ -40,6 +41,26 @@ public class Preferences {
         editor.putString(USERNAME_TAG, userCredentials.getUsername());
         editor.putString(PASSWORD_TAG, userCredentials.getPassword());
         editor.apply();
+    }
+
+    public static String getDeviceUUID(Context appContext) {
+         SharedPreferences saved_values = (SharedPreferences) saved_prefs(appContext);
+
+        String PREF_UNIQUE_ID = "PREF_UNIQUE_ID";
+        String uniqueID = saved_values.getString(PREF_UNIQUE_ID, "null");
+
+        if (uniqueID.equals("null")) {
+            SharedPreferences sharedPrefs = appContext.getSharedPreferences(
+                PREF_UNIQUE_ID, Context.MODE_PRIVATE);
+            uniqueID = sharedPrefs.getString(PREF_UNIQUE_ID, "null");
+            if (uniqueID.equals("null")) {
+                uniqueID = UUID.randomUUID().toString();
+                SharedPreferences.Editor editor = sharedPrefs.edit();
+                editor.putString(PREF_UNIQUE_ID, uniqueID);
+                editor.apply();
+            }
+        }
+        return uniqueID;
     }
 
 }

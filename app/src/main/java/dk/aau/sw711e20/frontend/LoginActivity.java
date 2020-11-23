@@ -10,7 +10,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.termux.R;
 
@@ -60,7 +59,8 @@ public class LoginActivity extends Activity {
     private void attemptLogin(UserCredentials userCredentials) {
         try {
             Log.i("user_login", "Logging in : " + userCredentials.toString());
-            UserCredentials userCred = new UserApi("http://10.0.2.2:8080").login(userCredentials, new DeviceId(getUUID()));
+            DeviceId deviceId = new DeviceId(Preferences.getDeviceUUID(getApplicationContext()));
+            UserCredentials userCred = new UserApi("http://10.0.2.2:8080").login(userCredentials, deviceId);
             onLoginSuccess(userCred);
         } catch (Exception e) {
             Log.i("user_login", e.toString());
@@ -117,24 +117,6 @@ public class LoginActivity extends Activity {
     public void pressCreateNewUser(View view) {
         editor.clear().commit();
         goToNewUserActivity();
-    }
-
-    public String getUUID() {
-        String PREF_UNIQUE_ID = "PREF_UNIQUE_ID";
-        String uniqueID = saved_values.getString(PREF_UNIQUE_ID, "null");
-
-        if (uniqueID.equals("null")) {
-            SharedPreferences sharedPrefs = getApplicationContext().getSharedPreferences(
-                PREF_UNIQUE_ID, Context.MODE_PRIVATE);
-            uniqueID = sharedPrefs.getString(PREF_UNIQUE_ID, "null");
-            if (uniqueID.equals("null")) {
-                uniqueID = UUID.randomUUID().toString();
-                SharedPreferences.Editor editor = sharedPrefs.edit();
-                editor.putString(PREF_UNIQUE_ID, uniqueID);
-                editor.apply();
-            }
-        }
-        return uniqueID;
     }
 
     /*

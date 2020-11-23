@@ -21,6 +21,7 @@ package io.swagger.client.models
  * @param status 
  * @param employer 
  * @param workersRequested 
+ * @param workersAssigned 
  */
 data class Job (
 
@@ -30,6 +31,7 @@ data class Job (
     val timestamp: java.time.LocalDateTime? = null,
     val status: kotlin.String? = null,
     val employer: kotlin.String? = null,
-    val workersRequested: kotlin.Int? = null
+    val workersRequested: kotlin.Int? = null,
+    val workersAssigned: kotlin.Int? = null
 ) {
 }
