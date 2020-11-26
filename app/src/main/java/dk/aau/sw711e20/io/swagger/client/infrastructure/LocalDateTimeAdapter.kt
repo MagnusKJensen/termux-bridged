@@ -1,4 +1,4 @@
-package io.swagger.client.infrastructure
+package org.openapitools.client.infrastructure
 
 import com.squareup.moshi.FromJson
 import com.squareup.moshi.ToJson

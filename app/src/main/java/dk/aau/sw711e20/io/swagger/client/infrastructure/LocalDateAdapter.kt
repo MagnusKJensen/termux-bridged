@@ -1,4 +1,4 @@
-package io.swagger.client.infrastructure
+package org.openapitools.client.infrastructure
 
 import com.squareup.moshi.FromJson
 import com.squareup.moshi.ToJson
@@ -13,6 +13,7 @@ class LocalDateAdapter {
 
     @FromJson
     fun fromJson(value: String): LocalDate {
-        return LocalDate.parse(value, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+        return LocalDate.parse(value, DateTimeFormatter.ISO_LOCAL_DATE)
     }
+
 }

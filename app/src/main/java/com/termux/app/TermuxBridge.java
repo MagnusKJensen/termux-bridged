@@ -16,9 +16,19 @@ public class TermuxBridge implements ServiceConnection {
 
     private static final int TERMINAL_WIDTH = 100, TERMINAL_HEIGHT = 200;
     private Consumer<String> onTextChanged;
+    private Long currentJobStartTimeMillis = 0L;
 
     public void setOnTextChanged(Consumer<String> onTextChanged) {
         this.onTextChanged = onTextChanged;
+    }
+
+    public boolean isJobRunning(){
+        return isExecutingCommand.get();
+    }
+
+    public long getCurrentCommandTime(){
+        if (!isJobRunning()) return -1L;
+        return System.currentTimeMillis() - currentJobStartTimeMillis;
     }
 
     private static class CommandBundle {
@@ -51,7 +61,6 @@ public class TermuxBridge implements ServiceConnection {
         TermuxInstaller.setupIfNeeded(activity, () -> {});
 
         termService.mSessionChangeCallback = createTerminalChangeHandler();
-
         terminalSession = termService.createTermSession(null, null, null, false);
         terminalSession.initializeEmulator(100, 200);
         this.terminalEmulator = terminalSession.getEmulator();
@@ -59,14 +68,12 @@ public class TermuxBridge implements ServiceConnection {
 
     @Override
     public void onServiceDisconnected(ComponentName componentName) {
-        // todo is a call to activity.finish() necessary here?
+        System.out.println("TERMUX SERVICE DISCONNECTED: " + componentName.flattenToString());
     }
 
     public void enqueueCommand(String command, Consumer<String> onFinished){
         commandQueue.add(new CommandBundle(command, onFinished));
         if (!isExecutingCommand.get()) startNextCommand();
-
-        // todo : if not already executing, start command
     }
 
     private synchronized void parseOutput(String terminalOutput){
@@ -74,13 +81,14 @@ public class TermuxBridge implements ServiceConnection {
         String lastLine = lines[lines.length - 1].trim();
         if (lastLine.equals("Do you want to continue? [Y/n]") || lastLine.equals("Do you want to continue ? (y/n)")) {
             executeCommand("Y");
+        } else if (lastLine.contains("[default=N]")) {
+            executeCommand("N");
         } else if (lastLine.equals("$")) {
             // The terminal has finished processing the previous command
             if (currentCommand != null){
                 currentCommand.onExecuted.accept(extractLatestOutput(terminalOutput));
                 currentCommand = null;
             }
-
             startNextCommand();
         }
     }

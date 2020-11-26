@@ -4,10 +4,10 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import org.openapitools.client.models.UserCredentials;
+
 import java.util.Optional;
 import java.util.UUID;
-
-import io.swagger.client.models.UserCredentials;
 
 public class Preferences {
 
@@ -20,14 +20,14 @@ public class Preferences {
         return editor;
     }
 
-    public static SharedPreferences saved_prefs(Context appCon){
+    public static SharedPreferences savedPrefs(Context appCon){
         return PreferenceManager.getDefaultSharedPreferences(appCon);
     }
 
     public static Optional<UserCredentials> getSavedCredentials (Context appCon) {
         final String DEFAULT = "*default_value";
-        String username = saved_prefs(appCon).getString("username", "*default_value");
-        String password = saved_prefs(appCon).getString("password", "*default_value");
+        String username = savedPrefs(appCon).getString("username", "*default_value");
+        String password = savedPrefs(appCon).getString("password", "*default_value");
 
         if (username.equals(DEFAULT) || password.equals(DEFAULT))
             return Optional.empty();
@@ -44,7 +44,7 @@ public class Preferences {
     }
 
     public static String getDeviceUUID(Context appContext) {
-         SharedPreferences saved_values = (SharedPreferences) saved_prefs(appContext);
+         SharedPreferences saved_values = (SharedPreferences) savedPrefs(appContext);
 
         String PREF_UNIQUE_ID = "PREF_UNIQUE_ID";
         String uniqueID = saved_values.getString(PREF_UNIQUE_ID, "null");

@@ -4,43 +4,51 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.termux.R;
 
-import java.io.IOException;
-import java.util.Arrays;
+import org.openapitools.client.apis.AssignmentApi;
+import org.openapitools.client.models.Assignment;
+import org.openapitools.client.models.DeviceId;
+import org.openapitools.client.models.UserCredentials;
 
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.ConnectionSpec;
-import okhttp3.HttpUrl;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
+import dk.aau.sw711e20.TermuxHandler;
 
+import static dk.aau.sw711e20.FileUtilsKt.decodeDownloadedFile;
+import static dk.aau.sw711e20.FileUtilsKt.unzipJobToDisk;
+import static dk.aau.sw711e20.frontend.LoginActivity.SERVER_ADDRESS;
 
 public class JobActivity extends Activity {
 
-    TextView jobStatus;
-    SharedPreferences.Editor editor;
-    SharedPreferences saved_values;
+    private TextView jobStatus;
+    private SharedPreferences.Editor editor;
+    private SharedPreferences saved_values;
+
+    private DeviceId deviceId;
+    private UserCredentials userCredentials;
+
+    private TermuxHandler termuxHandler;
 
     @SuppressLint("DefaultLocale")
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        termuxHandler = TermuxHandler.getInstance(this);
+        String username = getIntent().getStringExtra("username");
+        String password = getIntent().getStringExtra("password");
+        userCredentials = new UserCredentials(username, password);
+
+        deviceId = new DeviceId(Preferences.getDeviceUUID(getApplicationContext()));
+
         setContentView(R.layout.job_overview);
         editor = (SharedPreferences.Editor) Preferences.prefEditor(getApplicationContext());
-        saved_values = (SharedPreferences) Preferences.saved_prefs(getApplicationContext());
-
+        saved_values = (SharedPreferences) Preferences.savedPrefs(getApplicationContext());
     }
 
-    public void settings_press(View view) {
+    public void onSettingsButtonPressed(View view) {
         goToSettingsActivity(view);
     }
 
@@ -49,49 +57,26 @@ public class JobActivity extends Activity {
         startActivity(intent);
     }
 
-    public void logout_press(View view) {
+    public void onLogoutButtonPressed(View view) {
         editor.remove("login").commit();
         editor.remove("username").commit();
         goToLoginActivity(view);
     }
 
-    public void request_press(View view) {
-        jobStatus = findViewById(R.id.jobstatus);
-        HttpUrl url = HttpUrl.parse("http://85.218.169.108:8080/testing");
-
-        Request request = new Request.Builder()
-            .url(url)
-            .build();
-        new MyAsyncTask().execute(request);
-
-
-    }
-
-    class MyAsyncTask extends AsyncTask<Request, Void, Response> {
-        OkHttpClient client = new OkHttpClient.Builder()
-            .connectionSpecs(Arrays.asList(ConnectionSpec.MODERN_TLS, ConnectionSpec.COMPATIBLE_TLS, ConnectionSpec.CLEARTEXT))
-            .build();
-
-        @Override
-        protected Response doInBackground(Request... requests) {
-            Response response = null;
+    public void onRequestJobButtonPressed(View view) {
+        AssignmentApi assignmentApi = new AssignmentApi(SERVER_ADDRESS);
+        Thread jobRequestThread = new Thread(() -> {
             try {
-                response = client.newCall(requests[0]).execute();
-            } catch (IOException e) {
+                Assignment assignment = assignmentApi.getJobForDevice(userCredentials, deviceId);
+                unzipJobToDisk(getApplicationContext(), decodeDownloadedFile(assignment.getFile()));
+                termuxHandler.startExecutingPythonJob("main.py", (s) -> Log.i("Job Execution", "Finished executing job: " + s));
+            } catch (Exception e) {
+                // todo  show in ui
+                System.out.println("No job could be retrieved");
                 e.printStackTrace();
             }
-            return response;
-        }
-
-        @Override
-        protected void onPostExecute(Response response) {
-            super.onPostExecute(response);
-            try {
-                jobStatus.setText(response.body().string());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        });
+        jobRequestThread.start();
     }
 
     public void goToLoginActivity(View view) {

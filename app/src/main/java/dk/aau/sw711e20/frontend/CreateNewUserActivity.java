@@ -4,21 +4,16 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import androidx.annotation.Nullable;
 
 import com.termux.R;
 
-import io.swagger.client.apis.UserApi;
-import io.swagger.client.models.UserCredentials;
+import org.openapitools.client.apis.UserApi;
+import org.openapitools.client.models.UserCredentials;
 
 public class CreateNewUserActivity extends Activity {
 
@@ -30,7 +25,7 @@ public class CreateNewUserActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.new_user);
         editor = (SharedPreferences.Editor) Preferences.prefEditor(getApplicationContext());
-        saved_values = (SharedPreferences) Preferences.saved_prefs(getApplicationContext());
+        saved_values = (SharedPreferences) Preferences.savedPrefs(getApplicationContext());
     }
 
     @SuppressLint("SetTextI18n")

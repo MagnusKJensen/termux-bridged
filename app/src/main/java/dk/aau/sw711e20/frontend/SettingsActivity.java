@@ -10,7 +10,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkCapabilities;
 import android.os.BatteryManager;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -37,7 +36,7 @@ public class SettingsActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings);
         editor = (SharedPreferences.Editor) Preferences.prefEditor(getApplicationContext());
-        saved_values = (SharedPreferences) Preferences.saved_prefs(getApplicationContext());
+        saved_values = (SharedPreferences) Preferences.savedPrefs(getApplicationContext());
         editor.putString("wifi", "on").commit();
         editor.putString("power", "on").commit();
     }

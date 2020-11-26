@@ -1,4 +1,4 @@
-package io.swagger.client.infrastructure
+package org.openapitools.client.infrastructure
 
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter
@@ -7,10 +7,17 @@ import java.util.Date
 
 object Serializer {
     @JvmStatic
-    val moshi: Moshi = Moshi.Builder()
-            .add(KotlinJsonAdapterFactory())
-            .add(Date::class.java, Rfc3339DateJsonAdapter().nullSafe())
-            .add(LocalDateTimeAdapter())
-            .add(LocalDateAdapter())
-            .build()
+    val moshiBuilder: Moshi.Builder = Moshi.Builder()
+        .add(Date::class.java, Rfc3339DateJsonAdapter().nullSafe())
+        .add(OffsetDateTimeAdapter())
+        .add(LocalDateTimeAdapter())
+        .add(LocalDateAdapter())
+        .add(UUIDAdapter())
+        .add(ByteArrayAdapter())
+        .add(KotlinJsonAdapterFactory())
+
+    @JvmStatic
+    val moshi: Moshi by lazy {
+        moshiBuilder.build()
+    }
 }

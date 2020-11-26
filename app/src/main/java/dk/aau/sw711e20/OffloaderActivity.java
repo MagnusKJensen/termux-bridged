@@ -39,20 +39,6 @@ public class OffloaderActivity extends Activity {
         } else {
             setupTermuxService();
         }
-
-        /*
-        //termuxBridge.enqueueCommand("dpkg --configure -a", (output) -> System.out.println("Storage setup yielded: " + output + "\n"));
-        termuxBridge.enqueueCommand("apt update", (output) -> System.out.println("Storage setup yielded: " + output + "\n"));
-        termuxBridge.enqueueCommand("apt upgrade", (output) -> System.out.println("Storage setup yielded: " + output + "\n"));
-
-        termuxBridge.enqueueCommand("ln -s /storage/emulated/0 storage", (output) -> System.out.println("Storage setup yielded: " + output + "\n"));
-        termuxBridge.enqueueCommand("termux-setup-storage", (output) -> System.out.println("Storage setup yielded: " + output + "\n"));
-
-        termuxBridge.enqueueCommand("pwd", (output) -> System.out.println("PWD yielded: " + output + "\n"));
-        termuxBridge.enqueueCommand("ls -a", (output) -> System.out.println("ls -a yielded: " + output + "\n"));
-        termuxBridge.enqueueCommand("cd storage/Download", (output) -> System.out.println("cd yielded: " + output + "\n"));
-        termuxBridge.enqueueCommand("ls -a", (output) -> System.out.println("ls -a yielded: " + output + "\n"));
-        */
     }
 
     private void setupTermuxService(){

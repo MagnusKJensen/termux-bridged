@@ -1,0 +1,385 @@
+openapi: "3.0.0"
+info:
+  description: "Semester project for 7th semester at Aalborg University"
+  version: "1.0.0"
+  title: "Offloading"
+servers:
+  - url: http://localhost:8080
+
+tags:
+  - name : user
+  - name : job
+  - name : assignment
+
+components:
+  schemas:
+    Job:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          default: 0
+        name:
+          type: string
+        jobpath:
+          type: string
+        timestamp:
+          type: integer
+          format: int64
+          default: 0
+        status:
+          type: string
+        employer:
+          type: string
+        workersRequested:
+          type: integer
+        workersAssigned:
+          type: integer
+
+    Assignment:
+      type: object
+      properties:
+        job_id:
+          type: integer
+          format: int64
+        file:
+          type: string
+          format: byte
+
+    UserCredentials:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+
+    DeviceId:
+      type: object
+      properties:
+        imei:
+          type: string
+
+paths:
+  # Users
+  /users/{userCredentials}:
+    post:
+      tags:
+        - user
+      description: Creates a user
+      operationId: createUser
+      parameters:
+        - name: userCredentials
+          in: path
+          description: Credentials used to create new user
+          required: true
+          schema:
+            $ref: '#/components/schemas/UserCredentials'
+      responses:
+        '200':
+          description: User Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserCredentials'
+        # Todo : Error code, user already exists
+
+    get:
+      tags:
+        - user
+      description: Fakes a login
+      operationId: login
+      parameters:
+        - name: userCredentials
+          in: path
+          description: Credentials used to login user
+          required: true
+          schema:
+            $ref: '#/components/schemas/UserCredentials'
+        - name: deviceId
+          in: query
+          description: If logged in from a worker
+          required: false
+          schema:
+            $ref: '#/components/schemas/DeviceId'
+      responses:
+        '200':
+          description: User logged in
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserCredentials'
+        '404':
+          description: User credentials invalid
+
+    delete:
+      tags:
+        - user
+      description: Deletes a user
+      operationId: deleteUser
+      parameters:
+        - name: userCredentials
+          in: path
+          description: Credentials for user that should be deleted
+          required: true
+          schema:
+            $ref: '#/components/schemas/UserCredentials'
+      responses:
+        '200':
+          description: User Deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserCredentials'
+
+
+
+  /jobs/{userCredentials}:
+    post:
+      tags:
+        - job
+      description: Uploads a job to be computed
+      operationId: postJob
+
+      parameters:
+        - name: userCredentials
+          required: true
+          in: path
+          schema:
+            $ref: '#/components/schemas/UserCredentials'
+        - name: requestedWorkers
+          required: true
+          in: query
+          schema:
+            type: integer
+            format: int32
+
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                jobfile:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Computed job
+
+    get:
+      tags:
+        - job
+      description: Returns all jobs uploaded by given user
+      operationId: getJobsForUser
+      parameters:
+        - name: userCredentials
+          in: path
+          description: Username of user to filter jobs by
+          required: true
+          schema:
+            $ref: '#/components/schemas/UserCredentials'
+      responses:
+        '200':
+          description: List of jobs for selected user
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Job'
+
+  /jobs/{userCredentials}/{jobId}:
+    delete:
+      tags:
+        - job
+      description: Deletes a job
+      operationId: deleteJob
+      responses:
+        '200':
+          description: Job deleted
+      parameters:
+        - name: jobId
+          in: path
+          description: Job to be deleted
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: userCredentials
+          required: true
+          in: path
+          schema:
+            $ref: '#/components/schemas/UserCredentials'
+
+  /jobs/{userCredentials}/{jobId}/result:
+    get:
+      tags:
+        - job
+      description: Gets the job result
+      operationId: getJobResult
+
+      parameters:
+        - name: jobId
+          in: path
+          description: Job to query result for
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: userCredentials
+          required: true
+          in: path
+          schema:
+            $ref: '#/components/schemas/UserCredentials'
+
+      responses:
+        '200':
+          description: Found the job result
+          content:
+            multipart/form-data:
+              schema:
+                title: fileID
+                type: string
+                format: binary
+
+        '202':
+          description: Could not find job
+
+  /jobs/{userCredentials}/{jobId}/files:
+    get:
+      tags:
+        - job
+      description: Gets the job files
+      operationId: getJobFiles
+
+      parameters:
+        - name: jobId
+          in: path
+          description: Job to get files from
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: userCredentials
+          required: true
+          in: path
+          schema:
+            $ref: '#/components/schemas/UserCredentials'
+
+      responses:
+        '200':
+          description: Found the job result
+          content:
+            multipart/form-data:
+              schema:
+                title: fileID
+                type: string
+                format: binary
+
+        '202':
+          description: Could not find job
+
+
+  # Jobs assigned to workers
+  /assignments/{userCredentials}/{deviceId}:
+    get:
+      tags:
+        - assignment
+      description: Returns a job for the device to process
+      operationId: getJobForDevice
+
+      parameters:
+        - name: userCredentials
+          in: path
+          description: User authentication
+          required: true
+          schema:
+            $ref: '#/components/schemas/UserCredentials'
+        - name: deviceId
+          in: path
+          description: Identification for device
+          required: true
+          schema:
+            $ref: '#/components/schemas/DeviceId'
+
+      responses:
+        '200':
+          description: Job id and files for job assigned to device
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Assignment'
+        '202':
+          description: No jobs available for device
+
+  /assignments/{userCredentials}/{deviceId}/{jobId}:
+    post:
+      tags:
+        - assignment
+      description: Uploads the result
+      operationId: uploadJobResult
+
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                result:
+                  type: string
+                  format: binary
+
+      parameters:
+        - name: userCredentials
+          in: path
+          description: User authentication from worker
+          required: true
+          schema:
+            $ref: '#/components/schemas/UserCredentials'
+        - name: deviceId
+          in: path
+          description: Identification for device
+          required: true
+          schema:
+            $ref: '#/components/schemas/DeviceId'
+        - name: jobId
+          in: path
+          description: Job upload result for
+          required: true
+          schema:
+            type: integer
+            format: int64
+
+      responses:
+        '200':
+          description: Upload successful
+    delete:
+      tags:
+        - assignment
+      description: Quits the current assignment
+      operationId: quitAssignment
+      responses:
+        '200':
+          description: Assignment quit
+      parameters:
+        - name: userCredentials
+          in: path
+          description: User authentication from worker
+          required: true
+          schema:
+            $ref: '#/components/schemas/UserCredentials'
+        - name: deviceId
+          in: path
+          description: Identification for device
+          required: true
+          schema:
+            $ref: '#/components/schemas/DeviceId'
+        - name: jobId
+          in: path
+          description: Job to quit
+          required: true
+          schema:
+            type: integer
+            format: int64

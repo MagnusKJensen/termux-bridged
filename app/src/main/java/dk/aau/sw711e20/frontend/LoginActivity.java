@@ -2,7 +2,6 @@ package dk.aau.sw711e20.frontend;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -13,14 +12,17 @@ import android.widget.TextView;
 
 import com.termux.R;
 
-import java.util.Optional;
-import java.util.UUID;
+import org.openapitools.client.apis.UserApi;
+import org.openapitools.client.models.DeviceId;
+import org.openapitools.client.models.UserCredentials;
 
-import io.swagger.client.apis.UserApi;
-import io.swagger.client.models.DeviceId;
-import io.swagger.client.models.UserCredentials;
+import java.util.Optional;
+
+import dk.aau.sw711e20.TermuxHandler;
 
 public class LoginActivity extends Activity {
+
+    public static final String SERVER_ADDRESS = "http://10.0.2.2:8080";
 
     TextView textEdit;
     SharedPreferences.Editor editor;
@@ -31,7 +33,7 @@ public class LoginActivity extends Activity {
 
         setContentView(R.layout.login_screen);
         editor = (SharedPreferences.Editor) Preferences.prefEditor(getApplicationContext());
-        saved_values = (SharedPreferences) Preferences.saved_prefs(getApplicationContext());
+        saved_values = (SharedPreferences) Preferences.savedPrefs(getApplicationContext());
 
         Optional<UserCredentials> savedCredentials = Preferences.getSavedCredentials(getApplicationContext());
 
@@ -60,7 +62,7 @@ public class LoginActivity extends Activity {
         try {
             Log.i("user_login", "Logging in : " + userCredentials.toString());
             DeviceId deviceId = new DeviceId(Preferences.getDeviceUUID(getApplicationContext()));
-            UserCredentials userCred = new UserApi("http://10.0.2.2:8080").login(userCredentials, deviceId);
+            UserCredentials userCred = new UserApi(SERVER_ADDRESS).login(userCredentials, deviceId);
             onLoginSuccess(userCred);
         } catch (Exception e) {
             Log.i("user_login", e.toString());

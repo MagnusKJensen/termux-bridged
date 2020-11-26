@@ -25,7 +25,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="24dp"
         android:layout_marginBottom="50dp"
-        android:onClick="logout_press"
+        android:onClick="onLogoutButtonPressed"
         android:text="Logout"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -36,7 +36,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:layout_marginEnd="24dp"
-        android:onClick="settings_press"
+        android:onClick="onSettingsButtonPressed"
         android:src="@drawable/settings"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -57,7 +57,7 @@
         android:id="@+id/httpget"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="request_press"
+        android:onClick="onRequestJobButtonPressed"
         android:text="Request job"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
