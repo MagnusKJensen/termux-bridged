@@ -16,10 +16,13 @@ import org.openapitools.client.models.Assignment;
 import org.openapitools.client.models.DeviceId;
 import org.openapitools.client.models.UserCredentials;
 
+import java.util.Arrays;
+
 import dk.aau.sw711e20.TermuxHandler;
 
-import static dk.aau.sw711e20.FileUtilsKt.decodeDownloadedFile;
+import static dk.aau.sw711e20.FileUtilsKt.decodeDownloadedData;
 import static dk.aau.sw711e20.FileUtilsKt.unzipJobToDisk;
+import static dk.aau.sw711e20.FileUtilsKt.zipResult;
 import static dk.aau.sw711e20.frontend.LoginActivity.SERVER_ADDRESS;
 
 public class JobActivity extends Activity {
@@ -68,8 +71,8 @@ public class JobActivity extends Activity {
         Thread jobRequestThread = new Thread(() -> {
             try {
                 Assignment assignment = assignmentApi.getJobForDevice(userCredentials, deviceId);
-                unzipJobToDisk(getApplicationContext(), decodeDownloadedFile(assignment.getFile()));
-                termuxHandler.startExecutingPythonJob("main.py", (s) -> Log.i("Job Execution", "Finished executing job: " + s));
+                unzipJobToDisk(getApplicationContext(), decodeDownloadedData(assignment.getFile()));
+                termuxHandler.startExecutingPythonJob("main.py", (s) -> onJobFinishedExecuting());
             } catch (Exception e) {
                 // todo  show in ui
                 System.out.println("No job could be retrieved");
@@ -77,6 +80,10 @@ public class JobActivity extends Activity {
             }
         });
         jobRequestThread.start();
+    }
+
+    private void onJobFinishedExecuting(){
+        Log.i("JOB_FINISHED_", Arrays.toString(zipResult(getApplicationContext())));
     }
 
     public void goToLoginActivity(View view) {

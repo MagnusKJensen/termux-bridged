@@ -20,7 +20,7 @@ fun encodeFileForUpload(path: String): ByteArray {
     return Base64.encode(File(path).readBytes(), 0)
 }
 
-fun decodeDownloadedFile(data: ByteArray): ByteArray {
+fun decodeDownloadedData(data: ByteArray): ByteArray {
     return Base64.decode(data, 0)
 }
 
@@ -55,6 +55,15 @@ fun unzipJobToDisk(context: Context, jobData: ByteArray) {
     zipStream.close()
 }
 
+fun zipResult(context: Context): ByteArray {
+    val data = ByteArray(2048)
+    val resultFolder = File(context.filesDir, resultsFilePath)
+
+    val byteStream = ByteArrayOutputStream()
+    zipAll(resultFolder, ZipOutputStream(byteStream))
+    return byteStream.toByteArray()
+}
+
 fun createDirIfNotExisting(context: Context, targetDirectory: String): File {
     val newDir = File(targetDirectory)
     if (!newDir.exists()) newDir.mkdirs()
@@ -70,47 +79,52 @@ fun zipDir(directory: String, destPath: String) {
 
     ZipOutputStream(BufferedOutputStream(FileOutputStream(destPath))).use {
         it.use {
-            zipFiles(it, sourceFile, "")
+            zipRecursive(it, sourceFile, "")
         }
     }
 }
 
-private fun zipFiles(zipOut: ZipOutputStream, sourceFile: File, parentDirPath: String) {
-    val data = ByteArray(2048)
 
-    for (f in sourceFile.listFiles()) {
+fun zipAll(folderToZip: File, outputStream: OutputStream) {
+    ZipOutputStream(BufferedOutputStream(outputStream)).use {
+        zipRecursive(it, folderToZip, "")
+    }
+
+}
+
+private fun zipRecursive(zipOut: ZipOutputStream, sourceFile: File, parentDirPath: String) {
+    val data = ByteArray(2048)
+    sourceFile.listFiles()?.forEach { f ->
         if (f.isDirectory) {
-            val entry = ZipEntry(f.name + separator)
+            val path = if (parentDirPath == "") {
+                f.name
+            } else {
+                parentDirPath + File.separator + f.name
+            }
+            val entry = ZipEntry(path + File.separator)
             entry.time = f.lastModified()
             entry.isDirectory
             entry.size = f.length()
-
             zipOut.putNextEntry(entry)
-
             //Call recursively to add files within this directory
-            zipFiles(zipOut, f, f.name)
+            zipRecursive(zipOut, f, path)
         } else {
-            if (!f.name.contains(".zip")) { //If folder contains a file with extension ".zip", skip it
-                FileInputStream(f).use { fi ->
-                    BufferedInputStream(fi).use { origin ->
-                        val path = parentDirPath + separator + f.name
-                        val entry = ZipEntry(path)
-                        entry.time = f.lastModified()
-                        entry.isDirectory
-                        entry.size = f.length()
-                        zipOut.putNextEntry(entry)
-                        while (true) {
-                            val readBytes = origin.read(data)
-                            if (readBytes == -1) {
-                                break
-                            }
-                            zipOut.write(data, 0, readBytes)
+            FileInputStream(f).use { fi ->
+                BufferedInputStream(fi).use { origin ->
+                    val path = parentDirPath + File.separator + f.name
+                    val entry = ZipEntry(path)
+                    entry.time = f.lastModified()
+                    entry.isDirectory
+                    entry.size = f.length()
+                    zipOut.putNextEntry(entry)
+                    while (true) {
+                        val readBytes = origin.read(data)
+                        if (readBytes == -1) {
+                            break
                         }
+                        zipOut.write(data, 0, readBytes)
                     }
                 }
-            } else {
-                zipOut.closeEntry()
-                zipOut.close()
             }
         }
     }

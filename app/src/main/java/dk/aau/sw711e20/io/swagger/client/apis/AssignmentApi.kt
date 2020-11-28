@@ -25,7 +25,6 @@ import org.openapitools.client.infrastructure.RequestConfig
 import org.openapitools.client.infrastructure.RequestMethod
 import org.openapitools.client.infrastructure.ResponseType
 import org.openapitools.client.infrastructure.Success
-import org.openapitools.client.infrastructure.toMultiValue
 import kotlin.jvm.Throws
 
 class AssignmentApi(basePath: kotlin.String = defaultBasePath) : ApiClient(basePath) {
@@ -37,7 +36,6 @@ class AssignmentApi(basePath: kotlin.String = defaultBasePath) : ApiClient(baseP
     }
 
     /**
-    * 
     * Returns a job for the device to process
     * @param userCredentials User authentication 
     * @param deviceId Identification for device 
