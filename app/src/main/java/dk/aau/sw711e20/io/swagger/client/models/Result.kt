@@ -11,19 +11,23 @@
 */
 package org.openapitools.client.models
 
+import org.openapitools.client.models.Statistics
 
 import com.squareup.moshi.Json
 
 /**
  * 
- * @param jobId 
- * @param file 
+ * @param jobid 
+ * @param resultfile 
+ * @param statistics 
  */
 
-data class InlineResponse200 (
-    @Json(name = "job_id")
-    val jobId: kotlin.Long? = null,
-    @Json(name = "file")
-    val file: kotlin.String? = null
+data class Result (
+    @Json(name = "jobid")
+    val jobid: kotlin.Long? = null,
+    @Json(name = "resultfile")
+    val resultfile: kotlin.ByteArray? = null,
+    @Json(name = "statistics")
+    val statistics: Statistics? = null
 )
 

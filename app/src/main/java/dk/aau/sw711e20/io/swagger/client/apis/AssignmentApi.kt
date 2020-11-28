@@ -11,8 +11,9 @@
 */
 package org.openapitools.client.apis
 
-import org.openapitools.client.models.Assignment
 import org.openapitools.client.models.DeviceId
+import org.openapitools.client.models.JobFiles
+import org.openapitools.client.models.Result
 import org.openapitools.client.models.UserCredentials
 
 import org.openapitools.client.infrastructure.ApiClient
@@ -25,7 +26,7 @@ import org.openapitools.client.infrastructure.RequestConfig
 import org.openapitools.client.infrastructure.RequestMethod
 import org.openapitools.client.infrastructure.ResponseType
 import org.openapitools.client.infrastructure.Success
-import kotlin.jvm.Throws
+import org.openapitools.client.infrastructure.toMultiValue
 
 class AssignmentApi(basePath: kotlin.String = defaultBasePath) : ApiClient(basePath) {
     companion object {
@@ -36,17 +37,18 @@ class AssignmentApi(basePath: kotlin.String = defaultBasePath) : ApiClient(baseP
     }
 
     /**
+    * 
     * Returns a job for the device to process
     * @param userCredentials User authentication 
     * @param deviceId Identification for device 
-    * @return Assignment
+    * @return JobFiles
     * @throws UnsupportedOperationException If the API returns an informational or redirection response
     * @throws ClientException If the API returns a client error response
     * @throws ServerException If the API returns a server error response
     */
     @Suppress("UNCHECKED_CAST")
     @Throws(UnsupportedOperationException::class, ClientException::class, ServerException::class)
-    fun getJobForDevice(userCredentials: UserCredentials, deviceId: DeviceId) : Assignment {
+    fun getJobForDevice(userCredentials: UserCredentials, deviceId: DeviceId) : JobFiles {
         val localVariableBody: kotlin.Any? = null
         val localVariableQuery: MultiValueMap = mutableMapOf()
         val localVariableHeaders: MutableMap<String, String> = mutableMapOf()
@@ -56,13 +58,13 @@ class AssignmentApi(basePath: kotlin.String = defaultBasePath) : ApiClient(baseP
             query = localVariableQuery,
             headers = localVariableHeaders
         )
-        val localVarResponse = request<Assignment>(
+        val localVarResponse = request<JobFiles>(
             localVariableConfig,
             localVariableBody
         )
 
         return when (localVarResponse.responseType) {
-            ResponseType.Success -> (localVarResponse as Success<*>).data as Assignment
+            ResponseType.Success -> (localVarResponse as Success<*>).data as JobFiles
             ResponseType.Informational -> throw UnsupportedOperationException("Client does not support Informational responses.")
             ResponseType.Redirection -> throw UnsupportedOperationException("Client does not support Redirection responses.")
             ResponseType.ClientError -> {
@@ -131,10 +133,10 @@ class AssignmentApi(basePath: kotlin.String = defaultBasePath) : ApiClient(baseP
     * @throws ServerException If the API returns a server error response
     */
     @Throws(UnsupportedOperationException::class, ClientException::class, ServerException::class)
-    fun uploadJobResult(userCredentials: UserCredentials, deviceId: DeviceId, jobId: kotlin.Long, result: java.io.File?) : Unit {
-        val localVariableBody: kotlin.Any? = mapOf("result" to result)
+    fun uploadJobResult(userCredentials: UserCredentials, deviceId: DeviceId, jobId: kotlin.Long, result: Result?) : Unit {
+        val localVariableBody: kotlin.Any? = result
         val localVariableQuery: MultiValueMap = mutableMapOf()
-        val localVariableHeaders: MutableMap<String, String> = mutableMapOf("Content-Type" to "multipart/form-data")
+        val localVariableHeaders: MutableMap<String, String> = mutableMapOf()
         val localVariableConfig = RequestConfig(
             RequestMethod.POST,
             "/assignments/{userCredentials}/{deviceId}/{jobId}".replace("{"+"userCredentials"+"}", "$userCredentials").replace("{"+"deviceId"+"}", "$deviceId").replace("{"+"jobId"+"}", "$jobId"),

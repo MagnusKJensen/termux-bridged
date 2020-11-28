@@ -12,7 +12,7 @@ android {
         implementation "androidx.viewpager:viewpager:1.0.0"
         implementation "androidx.drawerlayout:drawerlayout:1.1.1"
 
-        implementation 'com.squareup.okhttp3:okhttp:3.10.0'
+        implementation 'com.squareup.okhttp3:okhttp:4.2.2'
         implementation project(":terminal-view")
 
         // https://mvnrepository.com/artifact/com.github.kittinunf.fuel/fuel

@@ -12,15 +12,17 @@ import android.widget.TextView;
 import com.termux.R;
 
 import org.openapitools.client.apis.AssignmentApi;
-import org.openapitools.client.models.Assignment;
 import org.openapitools.client.models.DeviceId;
+import org.openapitools.client.models.JobFiles;
+import org.openapitools.client.models.Result;
+import org.openapitools.client.models.Statistics;
 import org.openapitools.client.models.UserCredentials;
-
-import java.util.Arrays;
 
 import dk.aau.sw711e20.TermuxHandler;
 
-import static dk.aau.sw711e20.FileUtilsKt.decodeDownloadedData;
+import static dk.aau.sw711e20.FileUtilsKt.decodeData;
+import static dk.aau.sw711e20.FileUtilsKt.deleteJobFiles;
+import static dk.aau.sw711e20.FileUtilsKt.encodeData;
 import static dk.aau.sw711e20.FileUtilsKt.unzipJobToDisk;
 import static dk.aau.sw711e20.FileUtilsKt.zipResult;
 import static dk.aau.sw711e20.frontend.LoginActivity.SERVER_ADDRESS;
@@ -36,10 +38,15 @@ public class JobActivity extends Activity {
 
     private TermuxHandler termuxHandler;
 
+    private JobFiles currentJob;
+
+    AssignmentApi assignmentApi;
+
     @SuppressLint("DefaultLocale")
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         termuxHandler = TermuxHandler.getInstance(this);
+        assignmentApi = new AssignmentApi(SERVER_ADDRESS);
         String username = getIntent().getStringExtra("username");
         String password = getIntent().getStringExtra("password");
         userCredentials = new UserCredentials(username, password);
@@ -67,12 +74,11 @@ public class JobActivity extends Activity {
     }
 
     public void onRequestJobButtonPressed(View view) {
-        AssignmentApi assignmentApi = new AssignmentApi(SERVER_ADDRESS);
         Thread jobRequestThread = new Thread(() -> {
             try {
-                Assignment assignment = assignmentApi.getJobForDevice(userCredentials, deviceId);
-                unzipJobToDisk(getApplicationContext(), decodeDownloadedData(assignment.getFile()));
-                termuxHandler.startExecutingPythonJob("main.py", (s) -> onJobFinishedExecuting());
+                currentJob = assignmentApi.getJobForDevice(userCredentials, deviceId);
+                unzipJobToDisk(getApplicationContext(), decodeData(currentJob.getData()));
+                termuxHandler.startExecutingPythonJob("main.py", (s) -> postJobResult());
             } catch (Exception e) {
                 // todo  show in ui
                 System.out.println("No job could be retrieved");
@@ -82,8 +88,20 @@ public class JobActivity extends Activity {
         jobRequestThread.start();
     }
 
-    private void onJobFinishedExecuting(){
-        Log.i("JOB_FINISHED_", Arrays.toString(zipResult(getApplicationContext())));
+    private void postJobResult() {
+        Thread postResultThread = new Thread(() -> {
+            try {
+                byte[] resultData = encodeData(zipResult(getApplicationContext()));
+                Result result = new Result(currentJob.getJobid(), resultData, new Statistics(true, 0L)); // todo Cpu time? Client side vs server side?
+                assignmentApi.uploadJobResult(userCredentials, deviceId, currentJob.getJobid(), result);
+                deleteJobFiles(getApplicationContext());
+                currentJob = null;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        });
+        postResultThread.start();
     }
 
     public void goToLoginActivity(View view) {

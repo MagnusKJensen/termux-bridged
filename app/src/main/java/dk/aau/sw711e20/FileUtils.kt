@@ -17,10 +17,14 @@ const val resultsFolderName = "results"
 val resultsFilePath = jobFilesPath + separator + resultsFolderName
 
 fun encodeFileForUpload(path: String): ByteArray {
-    return Base64.encode(File(path).readBytes(), 0)
+    return encodeData(File(path).readBytes())
 }
 
-fun decodeDownloadedData(data: ByteArray): ByteArray {
+fun encodeData(bytes: ByteArray): ByteArray {
+    return Base64.encode(bytes, 0)
+}
+
+fun decodeData(data: ByteArray): ByteArray {
     return Base64.decode(data, 0)
 }
 
@@ -31,8 +35,7 @@ fun unzipJobToDisk(context: Context, jobData: ByteArray) {
     val buffer = ByteArray(1024)
     while (ze != null) {
         val fileName = ze.name
-        val newFile = File(context.filesDir, jobFilesPath + separator + fileName)
-        println("Unzipping to $jobFilesPath")
+        val newFile = File(context.filesDir, jobFilesPath + fileName)
 
         //create directories for sub directories in zip
         File(newFile.parent).mkdirs()
@@ -56,11 +59,9 @@ fun unzipJobToDisk(context: Context, jobData: ByteArray) {
 }
 
 fun zipResult(context: Context): ByteArray {
-    val data = ByteArray(2048)
     val resultFolder = File(context.filesDir, resultsFilePath)
-
     val byteStream = ByteArrayOutputStream()
-    zipAll(resultFolder, ZipOutputStream(byteStream))
+    zipAll(resultFolder, byteStream)
     return byteStream.toByteArray()
 }
 
@@ -68,10 +69,6 @@ fun createDirIfNotExisting(context: Context, targetDirectory: String): File {
     val newDir = File(targetDirectory)
     if (!newDir.exists()) newDir.mkdirs()
     return newDir
-}
-
-fun deleteJob(context: Context): File {
-    throw NotImplementedError()
 }
 
 fun zipDir(directory: String, destPath: String) {
@@ -86,10 +83,7 @@ fun zipDir(directory: String, destPath: String) {
 
 
 fun zipAll(folderToZip: File, outputStream: OutputStream) {
-    ZipOutputStream(BufferedOutputStream(outputStream)).use {
-        zipRecursive(it, folderToZip, "")
-    }
-
+    zipRecursive(ZipOutputStream(outputStream), folderToZip, "")
 }
 
 private fun zipRecursive(zipOut: ZipOutputStream, sourceFile: File, parentDirPath: String) {
@@ -128,4 +122,19 @@ private fun zipRecursive(zipOut: ZipOutputStream, sourceFile: File, parentDirPat
             }
         }
     }
+}
+
+fun deleteJobFiles(context: Context) {
+    val jobRootDir = File(context.filesDir, jobFilesFolderName)
+    deleteRecursive(jobRootDir)
+}
+
+private fun deleteRecursive(file: File) {
+    if (file.isDirectory) {
+        for (f in file.listFiles()) {
+            deleteRecursive(f)
+        }
+    }
+
+    file.delete()
 }

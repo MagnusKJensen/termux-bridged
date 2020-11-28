@@ -24,6 +24,7 @@ import com.squareup.moshi.Json
  * @param employer 
  * @param workersRequested 
  * @param workersAssigned 
+ * @param timeoutInMinutes 
  */
 
 data class Job (
@@ -42,6 +43,8 @@ data class Job (
     @Json(name = "workersRequested")
     val workersRequested: kotlin.Int? = null,
     @Json(name = "workersAssigned")
-    val workersAssigned: kotlin.Int? = null
+    val workersAssigned: kotlin.Int? = null,
+    @Json(name = "timeoutInMinutes")
+    val timeoutInMinutes: kotlin.Int? = null
 )
 

@@ -62,10 +62,8 @@ public class TermuxHandler {
         termuxBridge.enqueueCommand("cd " + FileUtilsKt.jobFilesFolderName, (s) -> {});
         termuxBridge.enqueueCommand("mkdir " + FileUtilsKt.resultsFolderName, (s) -> {});
         termuxBridge.enqueueCommand("python " + mainFileName, (s) -> {});
-        termuxBridge.enqueueCommand("cd " + FileUtilsKt.resultsFolderName, (s) -> {});
-        termuxBridge.enqueueCommand("cd .. ", (s) -> {});
-        termuxBridge.enqueueCommand("cd .. ", (s) -> {});
-        termuxBridge.enqueueCommand("pwd", (s) -> {});
+        termuxBridge.enqueueCommand("cd .. ", onFinished);
+
     }
 
     private void deleteJobFiles(){

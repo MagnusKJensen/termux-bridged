@@ -15,6 +15,7 @@ import com.termux.R;
 import org.openapitools.client.apis.UserApi;
 import org.openapitools.client.models.UserCredentials;
 
+
 public class CreateNewUserActivity extends Activity {
 
     TextView textEdit;
