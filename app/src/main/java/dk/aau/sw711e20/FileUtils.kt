@@ -1,9 +1,12 @@
 package dk.aau.sw711e20
 
 import android.content.Context
-import android.util.Base64
+import android.util.Log
+import org.apache.commons.codec.binary.Base64
+
 import java.io.*
 import java.io.File.*
+import java.util.*
 
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
@@ -21,11 +24,12 @@ fun encodeFileForUpload(path: String): ByteArray {
 }
 
 fun encodeData(bytes: ByteArray): ByteArray {
-    return Base64.encode(bytes, 0)
+    Log.i("test", Arrays.toString(bytes))
+    return Base64.encodeBase64(bytes)
 }
 
 fun decodeData(data: ByteArray): ByteArray {
-    return Base64.decode(data, 0)
+    return Base64.decodeBase64(data)
 }
 
 fun unzipJobToDisk(context: Context, jobData: ByteArray) {
@@ -71,17 +75,6 @@ fun createDirIfNotExisting(context: Context, targetDirectory: String): File {
     return newDir
 }
 
-fun zipDir(directory: String, destPath: String) {
-    val sourceFile = File(directory)
-
-    ZipOutputStream(BufferedOutputStream(FileOutputStream(destPath))).use {
-        it.use {
-            zipRecursive(it, sourceFile, "")
-        }
-    }
-}
-
-
 fun zipAll(folderToZip: File, outputStream: OutputStream) {
     zipRecursive(ZipOutputStream(outputStream), folderToZip, "")
 }
@@ -105,7 +98,9 @@ private fun zipRecursive(zipOut: ZipOutputStream, sourceFile: File, parentDirPat
         } else {
             FileInputStream(f).use { fi ->
                 BufferedInputStream(fi).use { origin ->
-                    val path = parentDirPath + File.separator + f.name
+
+                    val path = (if (parentDirPath.isNotEmpty()) parentDirPath + File.separator else "") + f.name
+
                     val entry = ZipEntry(path)
                     entry.time = f.lastModified()
                     entry.isDirectory
