@@ -75,31 +75,27 @@ fun createDirIfNotExisting(context: Context, targetDirectory: String): File {
 }
 
 fun zipAll(folderToZip: File, outputStream: OutputStream) {
-    zipRecursive(ZipOutputStream(outputStream), folderToZip, "")
+    val zipOut = ZipOutputStream(BufferedOutputStream(outputStream))
+    zipRecursive(zipOut, folderToZip, "")
+    zipOut.close()
 }
 
 private fun zipRecursive(zipOut: ZipOutputStream, sourceFile: File, parentDirPath: String) {
     val data = ByteArray(2048)
     sourceFile.listFiles()?.forEach { f ->
+        val path = (if (parentDirPath.isNotEmpty()) parentDirPath + File.separator else "") + f.name
         if (f.isDirectory) {
-            val path = if (parentDirPath == "") {
-                f.name
-            } else {
-                parentDirPath + File.separator + f.name
-            }
-            val entry = ZipEntry(path + File.separator)
+            val entry = ZipEntry(path + File.separator) // Separator is added to indicate that this is a folder
             entry.time = f.lastModified()
             entry.isDirectory
             entry.size = f.length()
             zipOut.putNextEntry(entry)
             //Call recursively to add files within this directory
             zipRecursive(zipOut, f, path)
+            zipOut.closeEntry()
         } else {
             FileInputStream(f).use { fi ->
                 BufferedInputStream(fi).use { origin ->
-
-                    val path = (if (parentDirPath.isNotEmpty()) parentDirPath + File.separator else "") + f.name
-
                     val entry = ZipEntry(path)
                     entry.time = f.lastModified()
                     entry.isDirectory
@@ -112,13 +108,11 @@ private fun zipRecursive(zipOut: ZipOutputStream, sourceFile: File, parentDirPat
                         }
                         zipOut.write(data, 0, readBytes)
                     }
+                    zipOut.closeEntry()
                 }
             }
         }
-        zipOut.closeEntry()
     }
-
-    zipOut.close()
 }
 
 fun deleteJobFiles(context: Context) {
