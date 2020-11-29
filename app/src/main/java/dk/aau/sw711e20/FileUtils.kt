@@ -84,10 +84,7 @@ private fun zipRecursive(zipOut: ZipOutputStream, sourceFile: File, parentDirPat
                 }
             }
         }
-        zipOut.closeEntry()
     }
-
-    zipOut.close()
 }
 
 fun unzipJobToDisk(context: Context, jobData: ByteArray) {
