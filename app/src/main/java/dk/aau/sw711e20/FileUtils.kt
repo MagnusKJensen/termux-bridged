@@ -116,7 +116,10 @@ private fun zipRecursive(zipOut: ZipOutputStream, sourceFile: File, parentDirPat
                 }
             }
         }
+        zipOut.closeEntry()
     }
+
+    zipOut.close()
 }
 
 fun deleteJobFiles(context: Context) {
