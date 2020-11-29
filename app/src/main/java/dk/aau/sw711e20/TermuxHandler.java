@@ -43,7 +43,6 @@ public class TermuxHandler {
     }
 
     private void setupTermuxService(Context context){
-        termuxBridge.setOnTextChanged((s) -> Log.i("TEMP_TERMUXHANDLER", s));
         Intent termuxServiceIntent = new Intent(context, TermuxService.class);
         context.startService(termuxServiceIntent);
         if (!context.bindService(termuxServiceIntent, termuxBridge, 0)) {

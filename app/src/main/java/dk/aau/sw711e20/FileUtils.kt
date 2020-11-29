@@ -24,7 +24,6 @@ fun encodeFileForUpload(path: String): ByteArray {
 }
 
 fun encodeData(bytes: ByteArray): ByteArray {
-    Log.i("test", Arrays.toString(bytes))
     return Base64.encodeBase64(bytes)
 }
 
