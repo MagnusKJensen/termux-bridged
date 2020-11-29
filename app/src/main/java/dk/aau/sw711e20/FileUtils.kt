@@ -31,35 +31,7 @@ fun decodeData(data: ByteArray): ByteArray {
     return Base64.decodeBase64(data)
 }
 
-fun unzipJobToDisk(context: Context, jobData: ByteArray) {
-    val zipStream = ZipInputStream(ByteArrayInputStream(jobData))
 
-    var ze: ZipEntry? = zipStream.nextEntry
-    val buffer = ByteArray(1024)
-    while (ze != null) {
-        val fileName = ze.name
-        val newFile = File(context.filesDir, jobFilesPath + fileName)
-
-        //create directories for sub directories in zip
-        File(newFile.parent).mkdirs()
-
-        val fos = FileOutputStream(newFile)
-        var len: Int
-        while (true) {
-            len = zipStream.read(buffer)
-            if (len <= 0)
-                break
-            fos.write(buffer, 0, len)
-        }
-
-        fos.close()
-        zipStream.closeEntry()
-        ze = zipStream.nextEntry
-    }
-
-    // ToDo: Do we need to also close bytearray stream?
-    zipStream.close()
-}
 
 fun zipResult(context: Context): ByteArray {
     val resultFolder = File(context.filesDir, resultsFilePath)
@@ -113,6 +85,40 @@ private fun zipRecursive(zipOut: ZipOutputStream, sourceFile: File, parentDirPat
             }
         }
     }
+}
+
+fun unzipJobToDisk(context: Context, jobData: ByteArray) {
+    val targetDir = File(context.filesDir, jobFilesPath)
+    unzip(ByteArrayInputStream(jobData), targetDir)
+}
+
+fun unzip(inStream: InputStream, outputFolder: File) {
+    val zipStream = ZipInputStream(inStream)
+    var ze: ZipEntry? = zipStream.nextEntry
+    val buffer = ByteArray(2048)
+    while (ze != null) {
+        val fileName = ze.name
+        val newFile = File(outputFolder.path + File.separator + fileName)
+        if (ze.isDirectory || fileName.endsWith("\\") || fileName.endsWith(File.separator) || fileName.endsWith("/")) {
+            newFile.mkdirs()
+        } else {
+            File(newFile.parent).mkdirs()
+            newFile.createNewFile()
+            val fos = FileOutputStream(newFile)
+            var len: Int
+            while (true) {
+                len = zipStream.read(buffer)
+                if (len <= 0)
+                    break
+                fos.write(buffer, 0, len)
+            }
+            fos.close()
+        }
+
+        zipStream.closeEntry()
+        ze = zipStream.nextEntry
+    }
+    zipStream.close()
 }
 
 fun deleteJobFiles(context: Context) {
