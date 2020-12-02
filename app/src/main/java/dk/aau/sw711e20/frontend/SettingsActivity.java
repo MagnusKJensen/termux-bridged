@@ -72,6 +72,15 @@ public class SettingsActivity extends Activity {
                 break;
         }
 
+        if (!saved_values.getString("to", "null").equals("null")){
+            EditText toText = findViewById(R.id.toTime);
+            toText.setText(saved_values.getString("to", "null"));
+        }
+
+        if (!saved_values.getString("from", "null").equals("null")){
+            EditText fromText = findViewById(R.id.fromTime);
+            fromText.setText(saved_values.getString("from", "null"));
+        }
 
     }
 
@@ -135,6 +144,9 @@ public class SettingsActivity extends Activity {
             Calendar cd = Calendar.getInstance();
             String ct = String.valueOf(cd.get(Calendar.HOUR_OF_DAY)) + ":" + String.valueOf(cd.get(Calendar.MINUTE));
             boolean isTime;
+
+            editor.putString("to", to).commit();
+            editor.putString("from", from).commit();
 
             // If one or both edit texts are empty then the timeframe is always.
             if (from.isEmpty() || to.isEmpty()) {
