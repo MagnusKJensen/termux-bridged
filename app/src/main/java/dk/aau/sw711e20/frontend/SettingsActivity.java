@@ -37,8 +37,42 @@ public class SettingsActivity extends Activity {
         setContentView(R.layout.settings);
         editor = (SharedPreferences.Editor) Preferences.prefEditor(getApplicationContext());
         saved_values = (SharedPreferences) Preferences.savedPrefs(getApplicationContext());
-        editor.putString("wifi", "on").commit();
-        editor.putString("power", "on").commit();
+        String wifi = saved_values.getString("wifi", "null");
+        String power = saved_values.getString("power", "null");
+
+        if (wifi.equals("null")){
+            editor.putString("wifi", "on").commit();
+            wifi = "On";
+        }
+
+        if (power.equals("null")){
+            editor.putString("power", "on").commit();
+            power = "on";
+        }
+
+        wifi = wifi.substring(0, 1).toUpperCase() + wifi.substring(1);
+
+        wifiButton = findViewById(R.id.wifiButton);
+        wifiButton.setText(wifi);
+
+        powerButton = findViewById(R.id.powerButton);
+
+        switch (power) {
+            case "off":
+                powerButton.setText("Off power");
+                break;
+            case "always":
+                powerButton.setText("Always");
+                break;
+            case "on":
+                powerButton.setText("To power");
+                break;
+            default:
+                powerButton.setText("you should not see this text");
+                break;
+        }
+
+
     }
 
     @SuppressLint("SetTextI18n")
