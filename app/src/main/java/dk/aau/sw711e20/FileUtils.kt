@@ -89,6 +89,7 @@ private fun zipRecursive(zipOut: ZipOutputStream, sourceFile: File, parentDirPat
 
 fun unzipJobToDisk(context: Context, jobData: ByteArray) {
     val targetDir = File(context.filesDir, jobFilesPath)
+    Log.i("UNZIP", targetDir.absolutePath)
     unzip(ByteArrayInputStream(jobData), targetDir)
 }
 
@@ -122,11 +123,13 @@ fun unzip(inStream: InputStream, outputFolder: File) {
 }
 
 fun deleteJobFiles(context: Context) {
-    val jobRootDir = File(context.filesDir, jobFilesFolderName)
+    val jobRootDir = File(context.filesDir, jobFilesPath)
     deleteRecursive(jobRootDir)
 }
 
 private fun deleteRecursive(file: File) {
+    if (! file.exists()) return
+
     if (file.isDirectory) {
         for (f in file.listFiles()) {
             deleteRecursive(f)

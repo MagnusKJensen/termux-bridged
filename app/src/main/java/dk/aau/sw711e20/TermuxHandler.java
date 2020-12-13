@@ -18,7 +18,7 @@ public class TermuxHandler {
         "pkg update",
         "dpkg --configure -a",
         "pkg install clang",
-        "pkg install python",
+        "pkg install python3",
         "ln -s /storage/emulated/0 storage",
         "termux-setup-storage",
         "cd ..",
@@ -26,7 +26,7 @@ public class TermuxHandler {
         "cd " + FileUtilsKt.mainFolderName,
         "mkdir " + FileUtilsKt.jobFilesFolderName,
         "pwd",
-        "ls -a"
+        "ls -a",
     };
 
     private final TermuxBridge termuxBridge;
@@ -45,6 +45,7 @@ public class TermuxHandler {
     private void setupTermuxService(Context context){
         Intent termuxServiceIntent = new Intent(context, TermuxService.class);
         context.startService(termuxServiceIntent);
+        //termuxBridge.setOnTextChanged((s) -> Log.i("termux_cmd", s));
         if (!context.bindService(termuxServiceIntent, termuxBridge, 0)) {
             throw new RuntimeException("Call to bindService() failed for termux service");
         }
@@ -60,13 +61,9 @@ public class TermuxHandler {
         termuxBridge.enqueueCommand("mkdir " + FileUtilsKt.jobFilesFolderName, (s) -> {});
         termuxBridge.enqueueCommand("cd " + FileUtilsKt.jobFilesFolderName, (s) -> {});
         termuxBridge.enqueueCommand("mkdir " + FileUtilsKt.resultsFolderName, (s) -> {});
-        termuxBridge.enqueueCommand("python " + mainFileName, (s) -> {});
+        termuxBridge.enqueueCommand("ls -a ", (s) -> Log.i("ExecPythonTermux", s));
+        termuxBridge.enqueueCommand("python3 " + mainFileName, (s) -> Log.i("ExecPythonTermux", s));
         termuxBridge.enqueueCommand("cd .. ", onFinished);
-
-    }
-
-    private void deleteJobFiles(){
-
     }
 
 

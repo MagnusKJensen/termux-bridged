@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.ComponentName;
 import android.content.ServiceConnection;
 import android.os.IBinder;
+import android.util.Log;
 
 import com.termux.terminal.TerminalEmulator;
 import com.termux.terminal.TerminalSession;
@@ -78,12 +79,13 @@ public class TermuxBridge implements ServiceConnection {
 
     private synchronized void parseOutput(String terminalOutput){
         String[] lines = terminalOutput.split("\n");
+        if (lines.length == 0) return;
         String lastLine = lines[lines.length - 1].trim();
         if (lastLine.equals("Do you want to continue? [Y/n]") || lastLine.equals("Do you want to continue ? (y/n)")) {
             executeCommand("Y");
         } else if (lastLine.contains("[default=N]")) {
             executeCommand("N");
-        } else if (lastLine.equals("$")) {
+        } else if (lastLine.equals("$") || lastLine.equals("~ $") || lastLine.endsWith("$")) {
             // The terminal has finished processing the previous command
             if (currentCommand != null){
                 currentCommand.onExecuted.accept(extractLatestOutput(terminalOutput));

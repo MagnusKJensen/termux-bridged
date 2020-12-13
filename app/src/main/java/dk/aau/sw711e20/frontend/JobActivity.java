@@ -21,6 +21,7 @@ import org.openapitools.client.models.Result;
 import org.openapitools.client.models.Statistics;
 import org.openapitools.client.models.UserCredentials;
 
+import dk.aau.sw711e20.ProcessingManager;
 import dk.aau.sw711e20.TermuxHandler;
 
 import static dk.aau.sw711e20.FileUtilsKt.decodeData;
@@ -50,12 +51,13 @@ public class JobActivity extends Activity {
     private TextView statusTextView;
     private Button activateButton;
 
-    private Runnable jobManager;
+    private ProcessingManager processingManager;
     private Thread jobHandlerThread;
 
     @SuppressLint("DefaultLocale")
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        deleteJobFiles(this.getApplicationContext());
         termuxHandler = TermuxHandler.getInstance(this);
         assignmentApi = new AssignmentApi(SERVER_ADDRESS);
         String username = getIntent().getStringExtra("username");
@@ -70,6 +72,10 @@ public class JobActivity extends Activity {
         activateButton = findViewById(R.id.activateButton);
         statusTextView = findViewById(R.id.statusText);
         updateActivateButtonStatus();
+
+        processingManager = new ProcessingManager(this, userCredentials, statusTextView);
+        jobHandlerThread = new Thread(processingManager);
+        jobHandlerThread.start();
     }
 
     public void onSettingsButtonPressed(View view) {
@@ -90,27 +96,8 @@ public class JobActivity extends Activity {
     public void onActivateButtonClicked(View view) {
         isActivated = !isActivated;
         updateActivateButtonStatus();
-
-        /*if (!isActivated) {
-            if (jobHandlerThread != null && jobHandlerThread.isAlive()) {
-                jobManager
-            }
-        }*/
-
-
-        /*
-        Thread jobRequestThread = new Thread(() -> {
-            try {
-                currentJob = assignmentApi.getJobForDevice(userCredentials, deviceId);
-                unzipJobToDisk(getApplicationContext(), decodeData(currentJob.getData()));
-                termuxHandler.startExecutingPythonJob("main.py", (s) -> postJobResult());
-            } catch (Exception e) {
-                // todo  show in ui
-                System.out.println("No job could be retrieved");
-                e.printStackTrace();
-            }
-        });
-        jobRequestThread.start();*/
+        if (isActivated) processingManager.activate();
+        else processingManager.deactivate();
     }
 
     private void updateActivateButtonStatus(){
@@ -128,22 +115,7 @@ public class JobActivity extends Activity {
         }
     }
 
-    private void postJobResult() {
-        Thread postResultThread = new Thread(() -> {
-            try {
-                byte[] resultData = encodeData(zipResult(getApplicationContext()));
-                //Result result = new Result(currentJob.getJobid(), resultData, new Statistics(true, 0L)); // todo Cpu time? Client side vs server side?
-                Jobresult jobresult = new Jobresult(new JobFiles(currentJob.getJobid(), resultData));
-                assignmentApi.uploadJobResult(userCredentials, deviceId, currentJob.getJobid(), jobresult);
-                deleteJobFiles(getApplicationContext());
-                currentJob = null;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
 
-        });
-        postResultThread.start();
-    }
 
     public void goToLoginActivity(View view) {
         Intent intent = new Intent(this, LoginActivity.class);
