@@ -37,6 +37,7 @@ class JobApi(basePath: kotlin.String = defaultBasePath) : ApiClient(basePath) {
     }
 
     /**
+    * 
     * Deletes a job
     * @param jobId Job to be deleted 
     * @param userCredentials  
@@ -205,21 +206,22 @@ class JobApi(basePath: kotlin.String = defaultBasePath) : ApiClient(basePath) {
     * 
     * Uploads a job to be computed
     * @param userCredentials  
-    * @param requestedWorkers  
+    * @param answersNeeded  
     * @param jobname  
     * @param timeout  
     * @param body  
-    * @return void
+    * @return kotlin.Long
     * @throws UnsupportedOperationException If the API returns an informational or redirection response
     * @throws ClientException If the API returns a client error response
     * @throws ServerException If the API returns a server error response
     */
+    @Suppress("UNCHECKED_CAST")
     @Throws(UnsupportedOperationException::class, ClientException::class, ServerException::class)
-    fun postJob(userCredentials: UserCredentials, requestedWorkers: kotlin.Int, jobname: kotlin.String, timeout: kotlin.Int, body: kotlin.ByteArray) : Unit {
+    fun postJob(userCredentials: UserCredentials, answersNeeded: kotlin.Int, jobname: kotlin.String, timeout: kotlin.Int, body: kotlin.ByteArray) : kotlin.Long {
         val localVariableBody: kotlin.Any? = body
         val localVariableQuery: MultiValueMap = mutableMapOf<kotlin.String, List<kotlin.String>>()
             .apply {
-                put("requestedWorkers", listOf(requestedWorkers.toString()))
+                put("answersNeeded", listOf(answersNeeded.toString()))
                 put("jobname", listOf(jobname.toString()))
                 put("timeout", listOf(timeout.toString()))
             }
@@ -230,13 +232,13 @@ class JobApi(basePath: kotlin.String = defaultBasePath) : ApiClient(basePath) {
             query = localVariableQuery,
             headers = localVariableHeaders
         )
-        val localVarResponse = request<Any?>(
+        val localVarResponse = request<kotlin.Long>(
             localVariableConfig,
             localVariableBody
         )
 
         return when (localVarResponse.responseType) {
-            ResponseType.Success -> Unit
+            ResponseType.Success -> (localVarResponse as Success<*>).data as kotlin.Long
             ResponseType.Informational -> throw UnsupportedOperationException("Client does not support Informational responses.")
             ResponseType.Redirection -> throw UnsupportedOperationException("Client does not support Redirection responses.")
             ResponseType.ClientError -> {

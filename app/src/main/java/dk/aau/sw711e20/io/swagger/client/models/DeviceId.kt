@@ -16,11 +16,11 @@ import com.squareup.moshi.Json
 
 /**
  * 
- * @param imei 
+ * @param uuid 
  */
 
 data class DeviceId (
-    @Json(name = "imei")
-    val imei: kotlin.String? = null
+    @Json(name = "uuid")
+    val uuid: kotlin.String? = null
 )
 

@@ -22,7 +22,7 @@ import dk.aau.sw711e20.TermuxHandler;
 
 public class LoginActivity extends Activity {
 
-    public static final String SERVER_ADDRESS = "http://10.0.2.2:8080";
+    public static final String SERVER_ADDRESS = "http://85.218.169.108:8080";
 
     TextView textEdit;
     SharedPreferences.Editor editor;

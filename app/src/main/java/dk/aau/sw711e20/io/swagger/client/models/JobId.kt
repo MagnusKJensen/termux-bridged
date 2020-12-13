@@ -16,11 +16,11 @@ import com.squareup.moshi.Json
 
 /**
  * 
- * @param result 
+ * @param jobID 
  */
 
-data class InlineObject1 (
-    @Json(name = "result")
-    val result: java.io.File? = null
+data class JobId (
+    @Json(name = "jobID")
+    val jobID: kotlin.Long? = null
 )
 

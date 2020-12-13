@@ -4,9 +4,11 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.termux.R;
@@ -14,6 +16,7 @@ import com.termux.R;
 import org.openapitools.client.apis.AssignmentApi;
 import org.openapitools.client.models.DeviceId;
 import org.openapitools.client.models.JobFiles;
+import org.openapitools.client.models.Jobresult;
 import org.openapitools.client.models.Result;
 import org.openapitools.client.models.Statistics;
 import org.openapitools.client.models.UserCredentials;
@@ -40,7 +43,15 @@ public class JobActivity extends Activity {
 
     private JobFiles currentJob;
 
+    private boolean isActivated = false;
+
     AssignmentApi assignmentApi;
+
+    private TextView statusTextView;
+    private Button activateButton;
+
+    private Runnable jobManager;
+    private Thread jobHandlerThread;
 
     @SuppressLint("DefaultLocale")
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,12 +61,15 @@ public class JobActivity extends Activity {
         String username = getIntent().getStringExtra("username");
         String password = getIntent().getStringExtra("password");
         userCredentials = new UserCredentials(username, password);
-
         deviceId = new DeviceId(Preferences.getDeviceUUID(getApplicationContext()));
 
         setContentView(R.layout.job_overview);
         editor = (SharedPreferences.Editor) Preferences.prefEditor(getApplicationContext());
         saved_values = (SharedPreferences) Preferences.savedPrefs(getApplicationContext());
+
+        activateButton = findViewById(R.id.activateButton);
+        statusTextView = findViewById(R.id.statusText);
+        updateActivateButtonStatus();
     }
 
     public void onSettingsButtonPressed(View view) {
@@ -73,7 +87,18 @@ public class JobActivity extends Activity {
         goToLoginActivity(view);
     }
 
-    public void onRequestJobButtonPressed(View view) {
+    public void onActivateButtonClicked(View view) {
+        isActivated = !isActivated;
+        updateActivateButtonStatus();
+
+        /*if (!isActivated) {
+            if (jobHandlerThread != null && jobHandlerThread.isAlive()) {
+                jobManager
+            }
+        }*/
+
+
+        /*
         Thread jobRequestThread = new Thread(() -> {
             try {
                 currentJob = assignmentApi.getJobForDevice(userCredentials, deviceId);
@@ -85,15 +110,31 @@ public class JobActivity extends Activity {
                 e.printStackTrace();
             }
         });
-        jobRequestThread.start();
+        jobRequestThread.start();*/
+    }
+
+    private void updateActivateButtonStatus(){
+        activateButton.setTextColor(Color.WHITE);
+        if (!isActivated) {
+            activateButton.setText("Activate");
+            statusTextView.setText("Deactivated");
+            statusTextView.setTextColor(Color.parseColor("#a83636"));
+            activateButton.setBackgroundColor(Color.parseColor("#329635"));
+        } else {
+            activateButton.setText("Deactivate");
+            statusTextView.setText("Waiting for server...");
+            statusTextView.setTextColor(Color.BLACK);
+            activateButton.setBackgroundColor(Color.parseColor("#a83636"));
+        }
     }
 
     private void postJobResult() {
         Thread postResultThread = new Thread(() -> {
             try {
                 byte[] resultData = encodeData(zipResult(getApplicationContext()));
-                Result result = new Result(currentJob.getJobid(), resultData, new Statistics(true, 0L)); // todo Cpu time? Client side vs server side?
-                assignmentApi.uploadJobResult(userCredentials, deviceId, currentJob.getJobid(), result);
+                //Result result = new Result(currentJob.getJobid(), resultData, new Statistics(true, 0L)); // todo Cpu time? Client side vs server side?
+                Jobresult jobresult = new Jobresult(new JobFiles(currentJob.getJobid(), resultData));
+                assignmentApi.uploadJobResult(userCredentials, deviceId, currentJob.getJobid(), jobresult);
                 deleteJobFiles(getApplicationContext());
                 currentJob = null;
             } catch (Exception e) {

@@ -15,6 +15,8 @@ import com.termux.R;
 import org.openapitools.client.apis.UserApi;
 import org.openapitools.client.models.UserCredentials;
 
+import static dk.aau.sw711e20.frontend.LoginActivity.SERVER_ADDRESS;
+
 
 public class CreateNewUserActivity extends Activity {
 
@@ -40,7 +42,7 @@ public class CreateNewUserActivity extends Activity {
 
         Thread createUserRequestThread = new Thread(() -> {
             try {
-                UserCredentials userCred = new UserApi("http://10.0.2.2:8080").createUser(enteredCredentials);
+                UserCredentials userCred = new UserApi(SERVER_ADDRESS).createUser(enteredCredentials);
                 Preferences.saveLoginCredentials(this, userCred);
                 goToJobActivity(userCred);
             } catch (Exception e) {

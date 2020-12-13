@@ -42,22 +42,10 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/killbutton"
+        android:id="@+id/activateButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginBottom="50dp"
-        android:shadowColor="#CD5B5B"
-        android:text="kill job"
-        android:textColor="#BD1F1F"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <Button
-        android:id="@+id/httpget"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="onRequestJobButtonPressed"
+        android:onClick="onActivateButtonClicked"
         android:text="Request job"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -66,14 +54,14 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/jobstatus"
+        android:id="@+id/statusText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
         android:text="No job running"
         android:textColor="#000000"
         android:textSize="18sp"
-        app:layout_constraintBottom_toTopOf="@+id/httpget"
+        app:layout_constraintBottom_toTopOf="@+id/activateButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
