@@ -31,18 +31,18 @@ public class TermuxHandler {
 
     private final TermuxBridge termuxBridge;
 
-    private TermuxHandler(Activity activity) {
+    private TermuxHandler(Activity activity, Runnable onSetupFinished) {
         termuxBridge = new TermuxBridge(activity);
-        setupTermuxService(activity);
+        setupTermuxService(activity, onSetupFinished);
     }
 
     private static TermuxHandler instance;
-    public static TermuxHandler getInstance(Activity activity) {
-        if (instance == null) instance = new TermuxHandler(activity);
+    public static TermuxHandler getInstance(Activity activity, Runnable onSetupFinished) {
+        if (instance == null) instance = new TermuxHandler(activity, onSetupFinished);
         return instance;
     }
 
-    private void setupTermuxService(Context context){
+    private void setupTermuxService(Context context, Runnable onSetupFinished){
         Intent termuxServiceIntent = new Intent(context, TermuxService.class);
         context.startService(termuxServiceIntent);
         //termuxBridge.setOnTextChanged((s) -> Log.i("termux_cmd", s));
@@ -50,9 +50,12 @@ public class TermuxHandler {
             throw new RuntimeException("Call to bindService() failed for termux service");
         }
 
-        for (String command : initializationCommands) {
-            termuxBridge.enqueueCommand(command, (s) -> {
+        for (int i = 0; i < initializationCommands.length; i++) {
+            final String command = initializationCommands[i];
+            Runnable onFinish = (i==initializationCommands.length - 1)? onSetupFinished : () -> {};
+            termuxBridge.enqueueCommand(initializationCommands[i], (s) -> {
                 Log.i("TermuxCommand", "Executed: " + command + "\nGot answer : " + s);
+                onFinish.run();
             });
         }
     }

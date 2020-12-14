@@ -43,14 +43,14 @@ public class ProcessingManager implements Runnable {
     public ProcessingManager(Activity activity, UserCredentials userCredentials, TextView textView) {
         this.statusTextView = textView;
         this.activity = activity;
-        termuxHandler = TermuxHandler.getInstance(activity);
+        termuxHandler = TermuxHandler.getInstance(activity, () -> {});
         assignmentApi = new AssignmentApi(SERVER_ADDRESS);
         this.userCredentials = userCredentials;
         deviceId = new DeviceId(Preferences.getDeviceUUID(activity.getApplicationContext()));
     }
 
     public void deactivate() {
-        //activated = false; todo REIMPLEMENT
+        activated = false;
     }
 
     public void activate() {

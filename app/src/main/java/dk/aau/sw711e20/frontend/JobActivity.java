@@ -45,6 +45,7 @@ public class JobActivity extends Activity {
     private JobFiles currentJob;
 
     private boolean isActivated = false;
+    private boolean isSetupFinished = false;
 
     AssignmentApi assignmentApi;
 
@@ -57,13 +58,6 @@ public class JobActivity extends Activity {
     @SuppressLint("DefaultLocale")
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        deleteJobFiles(this.getApplicationContext());
-        termuxHandler = TermuxHandler.getInstance(this);
-        assignmentApi = new AssignmentApi(SERVER_ADDRESS);
-        String username = getIntent().getStringExtra("username");
-        String password = getIntent().getStringExtra("password");
-        userCredentials = new UserCredentials(username, password);
-        deviceId = new DeviceId(Preferences.getDeviceUUID(getApplicationContext()));
 
         setContentView(R.layout.job_overview);
         editor = (SharedPreferences.Editor) Preferences.prefEditor(getApplicationContext());
@@ -73,9 +67,25 @@ public class JobActivity extends Activity {
         statusTextView = findViewById(R.id.statusText);
         updateActivateButtonStatus();
 
+
+        deleteJobFiles(this.getApplicationContext());
+        termuxHandler = TermuxHandler.getInstance(this, this::onTermuxSetupFinished);
+        assignmentApi = new AssignmentApi(SERVER_ADDRESS);
+        String username = getIntent().getStringExtra("username");
+        String password = getIntent().getStringExtra("password");
+        userCredentials = new UserCredentials(username, password);
+        deviceId = new DeviceId(Preferences.getDeviceUUID(getApplicationContext()));
+
+
+
         processingManager = new ProcessingManager(this, userCredentials, statusTextView);
         jobHandlerThread = new Thread(processingManager);
         jobHandlerThread.start();
+    }
+
+    private void onTermuxSetupFinished() {
+        this.isSetupFinished = true;
+        updateActivateButtonStatus();
     }
 
     public void onSettingsButtonPressed(View view) {
@@ -102,6 +112,15 @@ public class JobActivity extends Activity {
 
     private void updateActivateButtonStatus(){
         activateButton.setTextColor(Color.WHITE);
+        if (!isSetupFinished) {
+            statusTextView.setText("Installing Python Interpreter");
+            activateButton.setText("Activate");
+            activateButton.setEnabled(false);
+            return;
+        } else {
+            activateButton.setEnabled(true);
+        }
+
         if (!isActivated) {
             activateButton.setText("Activate");
             statusTextView.setText("Deactivated");
