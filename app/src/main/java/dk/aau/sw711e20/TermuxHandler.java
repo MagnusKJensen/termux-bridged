@@ -15,10 +15,9 @@ import java.util.function.Consumer;
 public class TermuxHandler {
 
     private static final String[] initializationCommands = {
-        "pkg update",
+        "pkg install python",
+        /*"pkg update",*/
         "dpkg --configure -a",
-        "pkg install clang",
-        "pkg install python3",
         "ln -s /storage/emulated/0 storage",
         "termux-setup-storage",
         "cd ..",
